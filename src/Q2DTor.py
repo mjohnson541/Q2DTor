@@ -1896,20 +1896,23 @@ def q2dtor_tor2dns(name,inpdata,files2read,files2write,Tlist):
     for value in dict_pes.values():
         if value[2] < EMIN_pes : EMIN_pes = value[2]
     print "        - Mininum energy in numeric PES: %+13.7f hartree"%EMIN_pes
-    EMIN_sp = float("inf")
-    for value in dict_CPs.values():
-        struct_instance = gts2Struct(value[4])
-        if struct_instance.get("Etot") < EMIN_sp : EMIN_sp = struct_instance.get("Etot")
-    print "        - Mininum energy in Fourier PES: %+13.7f hartree"%EMIN_sp
-    if EMIN_sp < EMIN_pes:
-       dE = (EMIN_pes-EMIN_sp) / cons.h / cons.c0 / cons.cm
-       print "        - Reference energy in Fourier PES will be changed:"
-       for idx in range(len(fterms)):
-           if fterms[idx][0] == 'const':
-              print "          * Constant term in Fourier potential was   : %+11.5f cm^-1"%(parameters[idx])
-              parameters[idx] = parameters[idx] + dE
-              print "          * Constant term in Fourier potential is now: %+11.5f cm^-1"%(parameters[idx])
-    print
+    try:
+        EMIN_sp = float("inf")
+        for value in dict_CPs.values():
+            struct_instance = gts2Struct(value[4])
+            if struct_instance.get("Etot") < EMIN_sp : EMIN_sp = struct_instance.get("Etot")
+        print "        - Mininum energy in Fourier PES: %+13.7f hartree"%EMIN_sp
+        if EMIN_sp < EMIN_pes:
+           dE = (EMIN_pes-EMIN_sp) / cons.h / cons.c0 / cons.cm
+           print "        - Reference energy in Fourier PES will be changed:"
+           for idx in range(len(fterms)):
+               if fterms[idx][0] == 'const':
+                  print "          * Constant term in Fourier potential was   : %+11.5f cm^-1"%(parameters[idx])
+                  parameters[idx] = parameters[idx] + dE
+                  print "          * Constant term in Fourier potential is now: %+11.5f cm^-1"%(parameters[idx])
+        print
+    except:
+        EMIN_sp = EMIN_pes
 
     #------------------------------------#
     # Check that torsions are in icoords #
