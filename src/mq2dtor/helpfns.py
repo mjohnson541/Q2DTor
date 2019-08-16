@@ -38,10 +38,17 @@ OTHER DEALINGS IN THE SOFTWARE.
  Module with diverse helper functions
 
 ''' 
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 #------------------------------------------------#
 # >>           Importation  section           << #
 #------------------------------------------------#
+from builtins import zip
+from builtins import str
+from builtins import range
+from past.utils import old_div
 import sys
 import numpy as np
 from   numpy.linalg      import norm
@@ -49,7 +56,7 @@ from   scipy.interpolate import UnivariateSpline
 from   scipy.optimize    import fmin
 from   scipy.integrate   import quad
 #------------------------------------------------#
-import constants         as cons
+from . import constants         as cons
 #------------------------------------------------#
 # >>>>>>>>>>>>>>>>>>>>> ## <<<<<<<<<<<<<<<<<<<<< #
 
@@ -248,7 +255,7 @@ def ms2cc_x(x_ms,masslist,mu):
     for idx in range(len(masslist)):
         f = np.sqrt(1.0 * masslist[idx] / mu) # mass-scaled factor
         x,y,z = x_ms[3*idx:3*idx+3]
-        x_cc += [ x/f , y/f , z/f ] 
+        x_cc += [ old_div(x,f) , old_div(y,f) , old_div(z,f) ] 
     return np.array(x_cc)
 
 #-----------------------#
@@ -260,7 +267,7 @@ def cc2ms_g(g_cc,masslist,mu):
     for idx in range(len(masslist)):
         f = np.sqrt(1.0 * masslist[idx] / mu) # mass-scaled factor
         gx,gy,gz = g_cc[3*idx:3*idx+3]
-        g_ms += [ gx/f , gy/f , gz/f ]
+        g_ms += [ old_div(gx,f) , old_div(gy,f) , old_div(gz,f) ]
     return np.array(g_ms)
 
 def ms2cc_g(g_ms,masslist,mu):
@@ -281,10 +288,10 @@ def cc2ms_F(F_cc,masslist,mu):
     shape  = (3*natoms,3*natoms)
     F_ms = np.matrix( np.zeros( shape ) )
     for i in range(3*natoms):
-        mi = masslist[int(i/3)]
+        mi = masslist[int(old_div(i,3))]
         for j in range(3*natoms):
-            mj = masslist[int(j/3)]
-            f = mu / np.sqrt(mi*mj)
+            mj = masslist[int(old_div(j,3))]
+            f = old_div(mu, np.sqrt(mi*mj))
             F_ms[i,j] = F_cc[i,j] * f
     return F_ms
 
@@ -294,11 +301,11 @@ def ms2cc_F(F_ms,masslist,mu):
     shape  = (3*natoms,3*natoms)
     F_cc = np.matrix( np.zeros( shape ) )
     for i in range(3*natoms):
-        mi = masslist[int(i/3)]
+        mi = masslist[int(old_div(i,3))]
         for j in range(3*natoms):
-            mj = masslist[int(j/3)]
-            f = mu / np.sqrt(mi*mj)
-            F_cc[i,j] = F_ms[i,j] / f
+            mj = masslist[int(old_div(j,3))]
+            f = old_div(mu, np.sqrt(mi*mj))
+            F_cc[i,j] = old_div(F_ms[i,j], f)
     return F_cc
 
 def frange(start,end,dx,include_end=True):
@@ -308,7 +315,7 @@ def frange(start,end,dx,include_end=True):
     start = float(start)
     end   = float(end  )
     dx    = float(dx   )
-    nsteps = int( round( (end-start)/dx ) )
+    nsteps = int( round( old_div((end-start),dx) ) )
     if include_end: nsteps = nsteps + 1
     return [ start+i*dx for i in range(nsteps)]
 
@@ -351,7 +358,7 @@ def hessianformat(hessian,natoms):
     try   : hessian = hessian.tolist()
     except: pass
 
-    lowtriangle  = (len(hessian) == 3*natoms*(3*natoms+1)/2)
+    lowtriangle  = (len(hessian) == old_div(3*natoms*(3*natoms+1),2))
     whole_matrix = (len(hessian) == 3*natoms)
     if lowtriangle : return ltriangle2matrix(hessian)
     if whole_matrix: return np.matrix(hessian)
@@ -370,7 +377,7 @@ def shift2cm(x_cc,masslist):
     center_of_mass = np.array([0.0,0.0,0.0])
     for i in range(len(masslist)):
        center_of_mass = center_of_mass + masslist[i] * xvec[3*i:3*i+3]
-    center_of_mass = center_of_mass / sum(masslist)
+    center_of_mass = old_div(center_of_mass, sum(masslist))
     # Shift the system so the center of mass is the origin
     shifted_xvec = np.copy(xvec)
     for i in range(len(masslist)):
@@ -384,7 +391,7 @@ def ltriangle2matrix(ltriangle_list):
     * ltriangle_list: a list with all the lower triangular elements of a symmetrix matrix
     '''
     l = len(ltriangle_list)
-    N = int( (-1 + np.sqrt(1+8*l)) / 2)
+    N = int( old_div((-1 + np.sqrt(1+8*l)), 2))
     index = 0
     matrix = np.zeros( (N,N) )
     for i in range(1,N+1):
@@ -403,16 +410,16 @@ def delta_ij(i,j):
    else:    return 0.0
 
 def isitlinear(x_cc,eps=1e-8):
-    natoms = len(x_cc) / 3
+    natoms = old_div(len(x_cc), 3)
     if natoms > 2:
        # 2nd atom from reference atom (1st one)
        ref_vec = x_cc[3:6] - x_cc[0:3]
-       ref_vec = ref_vec / np.linalg.norm(ref_vec)
+       ref_vec = old_div(ref_vec, np.linalg.norm(ref_vec))
        # Rest of atoms from reference atom
        for atom in range(2,natoms):
            idx = 3*atom
            nvec = x_cc[idx:idx+3] - x_cc[0:3]
-           nvec = nvec / np.linalg.norm(nvec)
+           nvec = old_div(nvec, np.linalg.norm(nvec))
            absdot = abs(np.dot(nvec,ref_vec))
            if absdot < (1.0 - eps): return False
     return True
@@ -448,7 +455,7 @@ def ranged_angle(angle,v=1):
     '''
 
     # First, in [0,2pi]
-    N = int( abs(angle / (2.0*np.pi)) )           # These three lines are useful
+    N = int( abs(old_div(angle, (2.0*np.pi))) )           # These three lines are useful
 
     if angle < 0.0: angle = angle + N*(2.0*np.pi) # if a big value in inserted (e.g. 1e8)
     else:           angle = angle - N*(2.0*np.pi) # as the conversion is faster
@@ -512,7 +519,7 @@ def calc_angle(x1,x2,x3):
     u = x1 - x2; norm_u = np.linalg.norm(u)
     v = x3 - x2; norm_v = np.linalg.norm(v)
     # Cosine and angle (from dot product)
-    cosine = np.dot(u,v) / (norm_u * norm_v)
+    cosine = old_div(np.dot(u,v), (norm_u * norm_v))
     theta  = np.arccos(cosine)
     return theta
 
@@ -658,7 +665,7 @@ def print_2Dmatrix(thematrix):
         col_string = ""
         for col in range(ncols):
             col_string = col_string + " %+6.3f "%float(thematrix[row,col])
-        print col_string
+        print(col_string)
 #----------------------------------#
 
 
@@ -888,7 +895,7 @@ def get_BondVectors(x_cc, natoms):
             xj, yj, zj = x_cc[3*j:3*j+3]
             eij = np.array( [float(xj-xi), float(yj-yi), float(zj-zi)] )
             dij = norm(eij)
-            eij = np.array(eij) / norm(eij)
+            eij = old_div(np.array(eij), norm(eij))
             bond_vectors[(i,j)] = (eij, dij)
     return bond_vectors
 
@@ -899,7 +906,7 @@ def angle_2vecs(vec1,vec2):
     '''
     dot_prod = np.dot(vec1,vec2)
     mod_prod = norm(vec1) * norm(vec2)
-    cos_angle = dot_prod / mod_prod
+    cos_angle = old_div(dot_prod, mod_prod)
     # In case of numerical problems
     if   abs(cos_angle - 1.0) < cons.ZERO:
        angle = 0.0
@@ -952,7 +959,7 @@ def icBondStretch(bond_vectors,ij,natoms):
                if i == j: delta_ij = 1.0
                else:      delta_ij = 0.0
                # Get C element
-               dr_daidbj = ((-1.0) ** delta_ab) * (u[i]*u[j] - delta_ij) / r
+               dr_daidbj = old_div(((-1.0) ** delta_ab) * (u[i]*u[j] - delta_ij), r)
                # Save data in both positions
                C_matrix[3*a+i,3*b+j] = dr_daidbj
                C_matrix[3*b+j,3*a+i] = dr_daidbj
@@ -978,7 +985,7 @@ def icBondAngle(bond_vectors,ijk,natoms):
     cosq = np.cos(q)
 
     # Generation of w
-    w = np.cross(u,v);  w = w / norm(w)
+    w = np.cross(u,v);  w = old_div(w, norm(w))
 
     uxw = np.cross(u,w)
     wxv = np.cross(w,v)
@@ -994,7 +1001,7 @@ def icBondAngle(bond_vectors,ijk,natoms):
         if a == n: zeta_amo =  0.0; zeta_ano = +1.0
         for i in [0,1,2]:
             # Get B element
-            dq_dai =  zeta_amo * uxw[i] / lambda_u + zeta_ano * wxv[i] / lambda_v
+            dq_dai =  old_div(zeta_amo * uxw[i], lambda_u) + old_div(zeta_ano * wxv[i], lambda_v)
             B_row[3*a+i] = dq_dai
     ################################################
 
@@ -1018,11 +1025,11 @@ def icBondAngle(bond_vectors,ijk,natoms):
             if i == j: delta_ij = 1.0
             else:      delta_ij = 0.0
             # Get second derivative
-            t1 = zeta_amo*zeta_bmo*(u[i]*v[j]+u[j]*v[i]-3*u[i]*u[j]*cosq+delta_ij*cosq)/(lambda_u**2 * sinq)
-            t2 = zeta_ano*zeta_bno*(v[i]*u[j]+v[j]*u[i]-3*v[i]*v[j]*cosq+delta_ij*cosq)/(lambda_v**2 * sinq)
-            t3 = zeta_amo*zeta_bno*(u[i]*u[j]+v[j]*v[i]-u[i]*v[j]*cosq-delta_ij)/(lambda_u*lambda_v*sinq)
-            t4 = zeta_ano*zeta_bmo*(v[i]*v[j]+u[j]*u[i]-v[i]*u[j]*cosq-delta_ij)/(lambda_u*lambda_v*sinq)
-            t5 = cosq / sinq * B_row[3*a+i] * B_row[3*b+j]
+            t1 = old_div(zeta_amo*zeta_bmo*(u[i]*v[j]+u[j]*v[i]-3*u[i]*u[j]*cosq+delta_ij*cosq),(lambda_u**2 * sinq))
+            t2 = old_div(zeta_ano*zeta_bno*(v[i]*u[j]+v[j]*u[i]-3*v[i]*v[j]*cosq+delta_ij*cosq),(lambda_v**2 * sinq))
+            t3 = old_div(zeta_amo*zeta_bno*(u[i]*u[j]+v[j]*v[i]-u[i]*v[j]*cosq-delta_ij),(lambda_u*lambda_v*sinq))
+            t4 = old_div(zeta_ano*zeta_bmo*(v[i]*v[j]+u[j]*u[i]-v[i]*u[j]*cosq-delta_ij),(lambda_u*lambda_v*sinq))
+            t5 = old_div(cosq, sinq * B_row[3*a+i] * B_row[3*b+j])
             dr_daidbj = t1 + t2 + t3 + t4 - t5
             C_matrix[3*a+i,3*b+j] = dr_daidbj
             C_matrix[3*b+j,3*a+i] = dr_daidbj
@@ -1037,7 +1044,7 @@ def icLinealAngle(m,o,n,MON,natoms):
         on = n - o
         dom = norm(om)
         don = norm(on)
-        qk = ((n[2]-o[2])*(m[k]-o[k]) - (n[k]-o[k])*(m[2]-o[2])) / dom / don
+        qk = old_div(((n[2]-o[2])*(m[k]-o[k]) - (n[k]-o[k])*(m[2]-o[2])), dom / don)
         Bk = []
         Dk = []
         for a in ["m","o","n"]:
@@ -1054,11 +1061,11 @@ def icLinealAngle(m,o,n,MON,natoms):
                        dik*(dan-dam)*o[2] + di2*(dam-dan)*o[k] +\
                        dik*(dam-dao)*n[2] + di2*(dao-dam)*n[k]
                 # Denominator
-                D_ai = (dam-dao)*(m[i]-o[i]) * don / dom + \
-                       (dan-dao)*(n[i]-o[i]) * dom / don
+                D_ai = old_div((dam-dao)*(m[i]-o[i]) * don, dom) + \
+                       old_div((dan-dao)*(n[i]-o[i]) * dom, don)
                 Dk.append(D_ai)
                 # Whole derivative
-                B_ai = (N_ai - qk*D_ai) / (dom*don)
+                B_ai = old_div((N_ai - qk*D_ai), (dom*don))
                 Bk.append(B_ai)
         return np.array(Bk), np.array(Dk)
 
@@ -1094,7 +1101,7 @@ def icLinealAngle(m,o,n,MON,natoms):
                         # Term 3
                         term3 = Bk[3*A+i] * Dk[3*B+j]
                         #
-                        Ck[3*A+i,3*B+j] = (term1 - term2 - term3) / dom / don
+                        Ck[3*A+i,3*B+j] = old_div((term1 - term2 - term3), dom / don)
         return np.matrix(Ck)
 
     M,O,N = MON
@@ -1103,19 +1110,19 @@ def icLinealAngle(m,o,n,MON,natoms):
     #------------------------------------------#
     # Define new z axis
     new_z = n - m
-    new_z = new_z / norm(new_z)
+    new_z = old_div(new_z, norm(new_z))
 
     # Define new y axis
     ref  = np.array([+1.0,+1.0,+1.0])
-    prod = np.dot(new_z,ref) / norm(new_z) / norm(ref)
+    prod = old_div(np.dot(new_z,ref), norm(new_z) / norm(ref))
     if abs(prod) == 0.0:
        ref = np.array([+1.0,-1.0,0.0])
     new_y = np.cross(ref,new_z)
-    new_y = new_y / norm(new_y)
+    new_y = old_div(new_y, norm(new_y))
 
     # Define new x axis
     new_x = np.cross(new_y,new_z)
-    new_x = new_x / norm(new_x)
+    new_x = old_div(new_x, norm(new_x))
 
     # Define rotation matrix such as new_r = R * old_r,
     # considering new_r and old_r as column vectors
@@ -1194,13 +1201,13 @@ def icDihedralAngle(bond_vectors,ijkl,natoms):
     uxw = np.cross(u,w)
     vxw = np.cross(v,w)
 
-    cosPhi_u = np.dot(u,w) / norm(u) / norm(w)
+    cosPhi_u = old_div(np.dot(u,w), norm(u) / norm(w))
     sinPhi_u = np.sqrt(1.0 - cosPhi_u**2)
-    cosPhi_v = -np.dot(v,w) / norm(v) / norm(w)
+    cosPhi_v = old_div(-np.dot(v,w), norm(v) / norm(w))
     sinPhi_v = np.sqrt(1.0 - cosPhi_v**2)
 
     # Get internal coordinate: dihedral angle
-    cosq = np.dot(uxw,vxw) / sinPhi_u / sinPhi_v
+    cosq = old_div(np.dot(uxw,vxw), sinPhi_u / sinPhi_v)
     if   abs(cosq - 1.0) < cons.ZERO:
        cosq = +1.0; q = 0.0
     elif abs(cosq + 1.0) < cons.ZERO:
@@ -1219,10 +1226,10 @@ def icDihedralAngle(bond_vectors,ijkl,natoms):
         if a == n: zeta_amo =  0.0; zeta_apn = -1.0; zeta_aop =  0.0
         for i in [0,1,2]:
             # Get B element
-            dq_dai =  zeta_amo * uxw[i] / lambda_u / sinPhi_u / sinPhi_u + \
-                      zeta_apn * vxw[i] / lambda_v / sinPhi_v / sinPhi_v + \
-                      zeta_aop * uxw[i] * cosPhi_u / lambda_w / sinPhi_u / sinPhi_u + \
-                      zeta_aop * vxw[i] * cosPhi_v / lambda_w / sinPhi_v / sinPhi_v
+            dq_dai =  old_div(zeta_amo * uxw[i], lambda_u / sinPhi_u / sinPhi_u) + \
+                      old_div(zeta_apn * vxw[i], lambda_v / sinPhi_v / sinPhi_v) + \
+                      old_div(zeta_aop * uxw[i] * cosPhi_u, lambda_w / sinPhi_u / sinPhi_u) + \
+                      old_div(zeta_aop * vxw[i] * cosPhi_v, lambda_w / sinPhi_v / sinPhi_v)
             B_row[3*a+i] = dq_dai
     ################################################
 
@@ -1250,28 +1257,28 @@ def icDihedralAngle(bond_vectors,ijkl,natoms):
             if a == b: delta_ab = 1.0
             else:      delta_ab = 0.0
             # Get second derivative
-            t01 = uxw[i]*(w[j]*cosPhi_u-u[j])/(lambda_u**2)/(sinPhi_u**4)
-            t02 = uxw[j]*(w[i]*cosPhi_u-u[i])/(lambda_u**2)/(sinPhi_u**4)
+            t01 = old_div(uxw[i]*(w[j]*cosPhi_u-u[j]),(lambda_u**2)/(sinPhi_u**4))
+            t02 = old_div(uxw[j]*(w[i]*cosPhi_u-u[i]),(lambda_u**2)/(sinPhi_u**4))
 
-            t03 = vxw[i]*(w[j]*cosPhi_v+v[j])/(lambda_v**2)/(sinPhi_v**4)
-            t04 = vxw[j]*(w[i]*cosPhi_v+v[i])/(lambda_v**2)/(sinPhi_v**4)
+            t03 = old_div(vxw[i]*(w[j]*cosPhi_v+v[j]),(lambda_v**2)/(sinPhi_v**4))
+            t04 = old_div(vxw[j]*(w[i]*cosPhi_v+v[i]),(lambda_v**2)/(sinPhi_v**4))
 
-            t05 = uxw[i]*(w[j]-2*u[j]*cosPhi_u+w[j]*cosPhi_u**2)/(2*lambda_u*lambda_w*sinPhi_u**4)
-            t06 = uxw[j]*(w[i]-2*u[i]*cosPhi_u+w[i]*cosPhi_u**2)/(2*lambda_u*lambda_w*sinPhi_u**4)
+            t05 = old_div(uxw[i]*(w[j]-2*u[j]*cosPhi_u+w[j]*cosPhi_u**2),(2*lambda_u*lambda_w*sinPhi_u**4))
+            t06 = old_div(uxw[j]*(w[i]-2*u[i]*cosPhi_u+w[i]*cosPhi_u**2),(2*lambda_u*lambda_w*sinPhi_u**4))
 
-            t07 = vxw[i]*(w[j]+2*v[j]*cosPhi_v+w[j]*cosPhi_v**2)/(2*lambda_v*lambda_w*sinPhi_v**4)
-            t08 = vxw[j]*(w[i]+2*v[i]*cosPhi_v+w[i]*cosPhi_v**2)/(2*lambda_v*lambda_w*sinPhi_v**4)
+            t07 = old_div(vxw[i]*(w[j]+2*v[j]*cosPhi_v+w[j]*cosPhi_v**2),(2*lambda_v*lambda_w*sinPhi_v**4))
+            t08 = old_div(vxw[j]*(w[i]+2*v[i]*cosPhi_v+w[i]*cosPhi_v**2),(2*lambda_v*lambda_w*sinPhi_v**4))
 
-            t09 = uxw[i]*(u[j]+u[j]*cosPhi_u**2-3*w[j]*cosPhi_u+w[j]*cosPhi_u**3) / (2*lambda_w**2*sinPhi_u**4)
-            t10 = uxw[j]*(u[i]+u[i]*cosPhi_u**2-3*w[i]*cosPhi_u+w[i]*cosPhi_u**3) / (2*lambda_w**2*sinPhi_u**4)
+            t09 = old_div(uxw[i]*(u[j]+u[j]*cosPhi_u**2-3*w[j]*cosPhi_u+w[j]*cosPhi_u**3), (2*lambda_w**2*sinPhi_u**4))
+            t10 = old_div(uxw[j]*(u[i]+u[i]*cosPhi_u**2-3*w[i]*cosPhi_u+w[i]*cosPhi_u**3), (2*lambda_w**2*sinPhi_u**4))
 
-            t11 = vxw[i]*(v[j]+v[j]*cosPhi_v**2+3*w[j]*cosPhi_v-w[j]*cosPhi_v**3) / (2*lambda_w**2*sinPhi_v**4)
-            t12 = vxw[j]*(v[i]+v[i]*cosPhi_v**2+3*w[i]*cosPhi_v-w[i]*cosPhi_v**3) / (2*lambda_w**2*sinPhi_v**4)
+            t11 = old_div(vxw[i]*(v[j]+v[j]*cosPhi_v**2+3*w[j]*cosPhi_v-w[j]*cosPhi_v**3), (2*lambda_w**2*sinPhi_v**4))
+            t12 = old_div(vxw[j]*(v[i]+v[i]*cosPhi_v**2+3*w[i]*cosPhi_v-w[i]*cosPhi_v**3), (2*lambda_w**2*sinPhi_v**4))
 
             if i != j and a != b:
                k = [0,1,2]; k.remove(i); k.remove(j); k = k[0]
-               t13 = (w[k]*cosPhi_u-u[k]) / lambda_u / lambda_w / sinPhi_u**2
-               t14 = (w[k]*cosPhi_v+v[k]) / lambda_v / lambda_w / sinPhi_v**2
+               t13 = old_div((w[k]*cosPhi_u-u[k]), lambda_u / lambda_w / sinPhi_u**2)
+               t14 = old_div((w[k]*cosPhi_v+v[k]), lambda_v / lambda_w / sinPhi_v**2)
             else:
                t13 = 0.0
                t14 = 0.0
@@ -1282,8 +1289,8 @@ def icDihedralAngle(bond_vectors,ijkl,natoms):
                        (zeta_anp*zeta_bpo+zeta_aop*zeta_bpn)*(t07 + t08) +\
                         zeta_aop*zeta_bpo*(t09 + t10) + \
                         zeta_aop*zeta_bop*(t11 + t12) + \
-                       (zeta_amo*zeta_bop+zeta_apo*zeta_bom)*(1-delta_ab)*(j-i) / (-2.)**(abs(j-i))*t13 +\
-                       (zeta_anp*zeta_bpo+zeta_aop*zeta_bpn)*(1-delta_ab)*(j-i) / (-2.)**(abs(j-i))*t14
+                       old_div((zeta_amo*zeta_bop+zeta_apo*zeta_bom)*(1-delta_ab)*(j-i), (-2.)**(abs(j-i))*t13) +\
+                       old_div((zeta_anp*zeta_bpo+zeta_aop*zeta_bpn)*(1-delta_ab)*(j-i), (-2.)**(abs(j-i))*t14)
             # Save data in both positions
             C_matrix[3*a+i,3*b+j] = dr_daidbj
             C_matrix[3*b+j,3*a+i] = dr_daidbj
@@ -1423,9 +1430,9 @@ def get_pgs(atom_num,atom_mass,geom_xyz,toldist=0.05,tolsym=3e-2,epsilon=3e-2):
      cdm = [0.,0.,0.]
      tot_mass = sum(mass)
      for i in range(0,natom):
-       cdm[0] += mass[i]*xyz[i,0]/tot_mass
-       cdm[1] += mass[i]*xyz[i,1]/tot_mass
-       cdm[2] += mass[i]*xyz[i,2]/tot_mass
+       cdm[0] += old_div(mass[i]*xyz[i,0],tot_mass)
+       cdm[1] += old_div(mass[i]*xyz[i,1],tot_mass)
+       cdm[2] += old_div(mass[i]*xyz[i,2],tot_mass)
      for i in range(0,natom):
        xyz[i,0] += - cdm[0]
        xyz[i,1] += - cdm[1]
@@ -1433,7 +1440,7 @@ def get_pgs(atom_num,atom_mass,geom_xyz,toldist=0.05,tolsym=3e-2,epsilon=3e-2):
      return xyz
   
   def I_diff(fx,fy,tol):
-      abs_rel = np.fabs(fx-fy)/fy*100.
+      abs_rel = old_div(np.fabs(fx-fy),fy*100.)
       if abs_rel <= tol: 
         return True
       else:
@@ -1474,7 +1481,7 @@ def get_pgs(atom_num,atom_mass,geom_xyz,toldist=0.05,tolsym=3e-2,epsilon=3e-2):
   def dist_c(v1,v2):
      L_novec = False
      vxn = []
-     vx = (v1+v2)/2
+     vx = old_div((v1+v2),2)
      vxn=np.linalg.norm(vx)
      if vxn == 0.: 
        L_novec = True
@@ -1582,7 +1589,7 @@ def get_pgs(atom_num,atom_mass,geom_xyz,toldist=0.05,tolsym=3e-2,epsilon=3e-2):
                 dxm.append(dx)
           vnorm=np.linalg.norm(coor_sea[i])
           if vnorm > epsilon:
-            dxm.append(coor_sea[i]/vnorm)
+            dxm.append(old_div(coor_sea[i],vnorm))
             new_c2_red += 1
   #
   # ---remove the redundancies from the C2 axes

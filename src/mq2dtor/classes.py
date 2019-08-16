@@ -38,10 +38,18 @@ OTHER DEALINGS IN THE SOFTWARE.
  This module constains different Classes
 
 '''
+from __future__ import division
+from __future__ import print_function
+from __future__ import absolute_import
 
 #------------------------------------------------#
 # >>           Importation  section           << #
 #------------------------------------------------#
+from builtins import zip
+from builtins import str
+from builtins import range
+from past.utils import old_div
+from builtins import object
 import math, cmath
 import sys
 import time
@@ -52,9 +60,9 @@ from   scipy.optimize import curve_fit
 from   scipy.optimize import newton
 #random.seed(1111)
 #------------------------------------------------#
-import constants      as     cons
-import helpfns        as     hf
-from   gtsfile        import read_gtsfile
+from . import constants      as     cons
+from . import helpfns        as     hf
+from   .gtsfile        import read_gtsfile
 # >>>>>>>>>>>>>>>>>>>>> ## <<<<<<<<<<<<<<<<<<<<< #
 
 
@@ -63,7 +71,7 @@ from   gtsfile        import read_gtsfile
 #>>>>>>>>>>>>>>>>>>*
 # CLASS: InfoStr   *
 #>>>>>>>>>>>>>>>>>>*
-class InfoStr:
+class InfoStr(object):
     def __init__(self):
         self.text = ""
     def add(self, string, n=0, b=0):
@@ -232,7 +240,7 @@ class Fourier2D(object):
 
           # Min, average and max values in ydata
           y_min  = min(ydata)
-          y_mean = sum(ydata) / len(ydata)
+          y_mean = old_div(sum(ydata), len(ydata))
           y_max  = max(ydata)
 
           # Define weights
@@ -270,7 +278,7 @@ class Fourier2D(object):
               if y < y_mean:
                  n_small += 1
                  averAbsErr_small += abs(y-yf)
-          rsquare = 1.0- SSres/SStot
+          rsquare = 1.0- old_div(SSres,SStot)
           averAbsErr /= len(ydata)
           averAbsErr_small /= n_small
 
@@ -282,7 +290,7 @@ class Fourier2D(object):
 #>>>>>>>>>>>>>>>>>>*
 # CLASS: splineVaG *
 #>>>>>>>>>>>>>>>>>>*
-class SplineVaG:
+class SplineVaG(object):
 
       def __init__(self,xx,yy):
           self.ZERO = 1e-6
@@ -400,7 +408,7 @@ class SplineVaG:
 #>>>>>>>>>>>>>>>>>>*
 # CLASS: Freq      *
 #>>>>>>>>>>>>>>>>>>*
-class Freq:
+class Freq(object):
     def __init__(self , scaling=1.0, mu=1.0/cons.amu, rmode=1):
        '''
        if rmode == 1: for imag frequencies, pfn = 1 and its derivates are 0
@@ -440,7 +448,7 @@ class Freq:
     def set_evalue(self , evalue):
         self.evalue = evalue
         # a) Calculate angular frequency
-        self.angfreq  = cmath.sqrt(self.evalue/self.mu)
+        self.angfreq  = cmath.sqrt(old_div(self.evalue,self.mu))
         self.angfreq *= self.scaling
         # If real, keep only real part
         if self.angfreq.imag == 0.0:
@@ -449,7 +457,7 @@ class Freq:
         else:
            self.real = False
         # b) Calculate wavenum
-        self.wavenum  = self.angfreq / (2.0*math.pi*cons.c0)
+        self.wavenum  = old_div(self.angfreq, (2.0*math.pi*cons.c0))
 
     def set_wavenum(self , wavenum):
         if wavenum.imag == 0.0:
@@ -468,15 +476,15 @@ class Freq:
         # a) Calculate angular frequency
         self.angfreq = self.wavenum * 2.0 * math.pi * cons.c0
         # b) Calculate eigenvalue
-        self.evalue = (self.angfreq / self.scaling)**2 * self.mu
+        self.evalue = (old_div(self.angfreq, self.scaling))**2 * self.mu
         if self.evalue.imag == 0.0: self.evalue = self.evalue.real
 
     def set_evector(self , evector):
         self.evector = evector
 
     def str(self,f="%4i"):
-        real = self.wavenum.real / cons.cm
-        imag = self.wavenum.imag / cons.cm
+        real = old_div(self.wavenum.real, cons.cm)
+        imag = old_div(self.wavenum.imag, cons.cm)
         if   imag == 0.0: string = f%real+" "
         elif real == 0.0: string = f%imag+"i"
         else:             string = "%4i%+4ii"%(real,imag)
@@ -494,8 +502,8 @@ class Freq:
         # (b) The frequency is real
         else:
            self.zpe    = cons.hbar * self.angfreq / 2.0
-           self.vibT   = cons.hbar * self.angfreq / cons.kB
-           self.tpoint = math.sqrt( cons.hbar / self.angfreq / self.mu )
+           self.vibT   = old_div(cons.hbar * self.angfreq, cons.kB)
+           self.tpoint = math.sqrt( old_div(cons.hbar, self.angfreq / self.mu) )
 
     ###############
     # Return data #
@@ -529,7 +537,7 @@ class Freq:
         if (not self.real) and (self._rmode == 1): return 1.0 , self.zpe
         if (not self.real) and (self._rmode == 2): return 1E10, self.zpe
 
-        exp  = np.exp(-self.vibT/T)
+        exp  = np.exp(old_div(-self.vibT,T))
         qvib = 1.0/(1.0-exp)
 
         return qvib, self.zpe
@@ -541,7 +549,7 @@ class Freq:
         hw   = cons.hbar * self.angfreq
         bhw  = (1.0/cons.kB/T) * hw
         exp  = np.exp(-bhw)
-        fdln = - hw * exp / (1.0-exp)
+        fdln = old_div(- hw * exp, (1.0-exp))
         return fdln
 
     def get_sdln(self,T):
@@ -560,7 +568,7 @@ class Freq:
 #>>>>>>>>>>>>>>>>>>*
 # CLASS: Queue     *
 #>>>>>>>>>>>>>>>>>>*
-class Queue:
+class Queue(object):
     """
     A simple implementation of a FIFO queue.
     """
@@ -584,7 +592,7 @@ class Queue:
 #>>>>>>>>>>>>>>>>>>*
 # CLASS: Stack     *
 #>>>>>>>>>>>>>>>>>>*
-class Stack:
+class Stack(object):
     """
     A simple implementation of a LIFO stack
     """
@@ -608,7 +616,7 @@ class Stack:
 #>>>>>>>>>>>>>>>>>>*
 # CLASS: UGRAPH    *
 #>>>>>>>>>>>>>>>>>>*
-class UGRAPH:
+class UGRAPH(object):
       """
       A simple implementation of a undirected graph
       """
@@ -625,14 +633,14 @@ class UGRAPH:
           '''
           Returns number of nodes in the ugraph
           '''
-          return len(self._ugdict.keys())
+          return len(list(self._ugdict.keys()))
 
       def get_edges(self):
           '''
           Returns the edges in the ugraph
           '''
           edges = set([])
-          for node1 in self._ugdict.keys():
+          for node1 in list(self._ugdict.keys()):
               for node2 in self._ugdict[node1]:
                   edge = tuple(sorted((node1,node2)))
                   edges.add(edge)
@@ -643,7 +651,7 @@ class UGRAPH:
           Returns number of edges in the ugraph
           '''
           edges = set([])
-          for node1 in self._ugdict.keys():
+          for node1 in list(self._ugdict.keys()):
               for node2 in self._ugdict[node1]:
                   edge = tuple(sorted((node1,node2)))
                   edges.add(edge)
@@ -656,7 +664,7 @@ class UGRAPH:
       # Add/Remove nodes and edges #
       #----------------------------#
       def add_node(self,node):
-          if node not in self._ugdict.keys():
+          if node not in list(self._ugdict.keys()):
              self._ugdict[node] = set([])
 
       def add_edge(self,node1,node2):
@@ -669,7 +677,7 @@ class UGRAPH:
           # Remove node
           self._ugdict.pop(node1)
           # Remove edges with that node
-          for node2 in self._ugdict.keys():
+          for node2 in list(self._ugdict.keys()):
               self._ugdict[node2].discard(node1)
           
       def remove_edge(self,node1,node2):
@@ -775,7 +783,7 @@ class UGRAPH:
 
       def get_fragments(self):
           fragments = []
-          nodes = self._ugdict.keys()
+          nodes = list(self._ugdict.keys())
 
           visited_nodes = set([])
           for node in nodes:
@@ -818,7 +826,7 @@ class UGRAPH:
           layers  = [set([center])]
           current = [center]
           visited = set([center])
-          nnodes  = len(self._ugdict.keys())
+          nnodes  = len(list(self._ugdict.keys()))
 
           while len(visited) != nnodes:
                 layer = []
@@ -839,7 +847,7 @@ class UGRAPH:
       def gen_laplacian(self):
           num_nodes = self.get_nnodes()
           laplacian = np.zeros((num_nodes,num_nodes))
-          for node in self._ugdict.keys():
+          for node in list(self._ugdict.keys()):
               neighbors = self._ugdict[node]
               for neighbor in neighbors:
                   laplacian[node,node] = laplacian[node,node] + 1
@@ -858,7 +866,7 @@ class UGRAPH:
 
           # Data for each node
           dict_vecs = {}
-          for node in self._ugdict.keys():
+          for node in list(self._ugdict.keys()):
               vector = [ abs(float(vecs[node,idx])) for idx in range(len(vals)) if degs[idx] == 1]
               dict_vecs[node] = vector
           return dict_vecs
@@ -1110,7 +1118,7 @@ class Struct(object):
         '''
         '''
         if type(setup) == type(1): setup = [setup]
-        if      setup  == "all"  : setup = range(5)
+        if      setup  == "all"  : setup = list(range(5))
 
 
         for stype in setup:
@@ -1154,13 +1162,13 @@ class Struct(object):
                self._imoments = []
                if self._nrot == 2:
                    evalsI = np.sort(evalsI)
-                   cocient = evalsI[1] / evalsI[2]
+                   cocient = old_div(evalsI[1], evalsI[2])
                    if abs(cocient - 1.0) < cons.ZERO: self._imoments = [evalsI[1]]
                    else: sys.exit("ERROR! Molecule is not linear!")
                else:
                    self._imoments = evalsI
                # (c) Get rotational Temperatures
-               self._rotT   = [cons.hbar**2 / (2*I_i*cons.kB) for I_i in self._imoments]
+               self._rotT   = [old_div(cons.hbar**2, (2*I_i*cons.kB)) for I_i in self._imoments]
 
     #-----------------------------------#
     #  Cartesian-Coordinate FREQUENCIES #
@@ -1181,7 +1189,7 @@ class Struct(object):
             T = np.zeros(3*self._natoms)
             for j in range(self._natoms):
                 T[3*j+i] = math.sqrt(self._masslist[j])
-            T = T / np.linalg.norm(T)
+            T = old_div(T, np.linalg.norm(T))
             T_vecs.append(T)
         # (b) Rotation vectors (b4,b5,b6)
         R1 = np.zeros(3*self._natoms)
@@ -1197,7 +1205,7 @@ class Struct(object):
         R_vecs = []
         for R in (R1,R2,R3):
             normR = np.linalg.norm(R)
-            if normR > 1e-7: R = R / normR; R_vecs.append(R)
+            if normR > 1e-7: R = old_div(R, normR); R_vecs.append(R)
         # (c) Apply Gram Schmidt method (v1 to v6 vectors)
         X = np.matrix(T_vecs+R_vecs).transpose() # each column is a vector
         X_gs, R = np.linalg.qr(X)
@@ -1354,7 +1362,7 @@ class Struct(object):
         # Project out the reaction coordinate
         if proj_rc:
            g_nric = P * g_ric
-           p      = g_nric * g_nric.transpose() / (g_nric.transpose() * h * g_nric)
+           p      = old_div(g_nric * g_nric.transpose(), (g_nric.transpose() * h * g_nric))
            proj_F = (np.identity(num_ric) - p*h) * f_nric * (np.identity(num_ric)-h*p)
         else:
            proj_F = f_nric
@@ -1418,7 +1426,7 @@ class Struct(object):
             for i in range(3*self._natoms):
                 m_i = mass_array[i]
                 F_evector[i] = np.sqrt(m_i) * F_evector[i]
-            if np.linalg.norm(F_evector) != 0.0: F_evector = F_evector / np.linalg.norm(F_evector)
+            if np.linalg.norm(F_evector) != 0.0: F_evector = old_div(F_evector, np.linalg.norm(F_evector))
             # Evector (remove zero imaginary component)
             F_evector = np.array([float(Fi.real) for Fi in F_evector.transpose().tolist()[0]])
             # Generate frequency
@@ -1507,7 +1515,7 @@ class Struct(object):
         # Project out the reaction coordinate
         if proj_rc:
            g_nric = P * g_ric
-           p      = g_nric * g_nric.transpose() / (g_nric.transpose() * h * g_nric)
+           p      = old_div(g_nric * g_nric.transpose(), (g_nric.transpose() * h * g_nric))
            proj_F = (np.identity(num_ric) - p*h) * f_nric * (np.identity(num_ric)-h*p)
         else:
            proj_F = f_nric
@@ -1570,7 +1578,7 @@ class Struct(object):
             for i in range(3*self._natoms):
                 m_i = mass_array[i]
                 F_evector[i] = np.sqrt(m_i) * F_evector[i]
-            if np.linalg.norm(F_evector) != 0.0: F_evector = F_evector / np.linalg.norm(F_evector)
+            if np.linalg.norm(F_evector) != 0.0: F_evector = old_div(F_evector, np.linalg.norm(F_evector))
             # Evector (remove zero imaginary component)
             F_evector = np.array([float(Fi.real) for Fi in F_evector.transpose().tolist()[0]])
             # Generate frequency
@@ -1591,7 +1599,7 @@ class Struct(object):
         # cc-freqs
         ccfreqs = self.get("ccfreqs")
         if ccfreqs is None or ccfreqs == []:
-           print "ERROR: cc-freqs are not calculated!"
+           print("ERROR: cc-freqs are not calculated!")
            sys.exit()
         # ic-freqs
         self.calc_icfreqs(icoords)
@@ -1600,8 +1608,8 @@ class Struct(object):
         if len(ccfreqs) != len(icfreqs): return False
         # Compare frequency value
         for idx in range(len(ccfreqs)):
-            ccfreq = ccfreqs[idx].get("wavenum")/cons.cm
-            icfreq = icfreqs[idx].get("wavenum")/cons.cm
+            ccfreq = old_div(ccfreqs[idx].get("wavenum"),cons.cm)
+            icfreq = old_div(icfreqs[idx].get("wavenum"),cons.cm)
             diff = abs(ccfreq-icfreq)
             if diff > 0.5: return False
         return True
@@ -1660,16 +1668,16 @@ class Struct(object):
            beta = 1.0 / (cons.kB * T)
 
            # (a) Translational partition function
-           ptra = ( 2 * np.pi * self._totmass * cons.kB * T )**(3./2.) / (cons.h**3)
+           ptra = old_div(( 2 * np.pi * self._totmass * cons.kB * T )**(3./2.), (cons.h**3))
 
            # (b) Rotational partition function
            qrot = 1.0
            if   self._nrot == 2:
-                qrot = 1.0 * (T / self._rotT[0])
+                qrot = 1.0 * (old_div(T, self._rotT[0]))
            if self._nrot == 3:
                 product = self._rotT[0] * self._rotT[1] * self._rotT[2]
-                qrot = math.sqrt(np.pi * T**3 / product)
-           qrot = qrot/self._rotsigma
+                qrot = math.sqrt(old_div(np.pi * T**3, product))
+           qrot = old_div(qrot,self._rotsigma)
 
            # (c) Vibrational partition function
            qvib = 1.0
@@ -2006,7 +2014,7 @@ class Struct(object):
                x0   = xvector[3*idxB:3*idxB+3]
                axis = xvector[3*idxA:3*idxA+3] - x0
                target_fragment = A_frag.copy()
-            axis = axis / np.linalg.norm(axis)
+            axis = old_div(axis, np.linalg.norm(axis))
 
             # Remove indices of the bond
             target_fragment.discard(idxA)
@@ -2378,20 +2386,20 @@ class Struct(object):
         if check:
           ccfreqs = self.get("ccfreqs")
           if ccfreqs is None or ccfreqs == []:
-             print "ERROR: cc-freqs are not calculated!"
+             print("ERROR: cc-freqs are not calculated!")
              sys.exit()
           self.calc_icfreqs(ricoords)
           icfreqs = self.get("icfreqs")
           if len(ccfreqs) != len(icfreqs):
-             print "ERROR: redundant internal coordinates are not adequate!"
+             print("ERROR: redundant internal coordinates are not adequate!")
              sys.exit()
           else:
              for idx in range(len(ccfreqs)):
-                 ccfreq = ccfreqs[idx].get("wavenum")/cons.cm
-                 icfreq = icfreqs[idx].get("wavenum")/cons.cm
+                 ccfreq = old_div(ccfreqs[idx].get("wavenum"),cons.cm)
+                 icfreq = old_div(icfreqs[idx].get("wavenum"),cons.cm)
                  diff = abs(ccfreq-icfreq)
                  if diff > 0.5:
-                    print "ERROR: cc-freqs and ic-freqs differ more than 0.5 cm^-1"
+                    print("ERROR: cc-freqs and ic-freqs differ more than 0.5 cm^-1")
                     sys.exit()
 
         return ricoords, nics
@@ -2409,12 +2417,12 @@ class Struct(object):
 
         nn = get_nics(ricoords)
         if nn < self._nvib:
-           print "ERROR: System requires %i internal coordinates, but only %i are given"%(self._nvib,nn)
+           print("ERROR: System requires %i internal coordinates, but only %i are given"%(self._nvib,nn))
            sys.exit()
 
         ccfreqs = self.get("ccfreqs")
         if ccfreqs is None or ccfreqs == []:
-           print "ERROR: cc-freqs are not calculated!"
+           print("ERROR: cc-freqs are not calculated!")
            sys.exit()
 
         # Coordinates that can't be removed
@@ -2443,13 +2451,13 @@ class Struct(object):
             # compare cc and ic freqs
             if len(icfreqs) != len(ccfreqs): continue
             for ccfreq,icfreq in zip(ccfreqs,icfreqs):
-                diff = abs((ccfreq.get("wavenum")-icfreq.get("wavenum"))/cons.cm)
+                diff = abs(old_div((ccfreq.get("wavenum")-icfreq.get("wavenum")),cons.cm))
                 if diff > 0.5: break
             if diff > 0.5: continue
             # Accept removal
             ics = list(ics2)
-            if show and kind != "3": print "             removing IC %s..."%("-".join( [str(atom+1) for atom in ic]))
-            if show and kind == "3": print "             removing IC %s..."%("=".join( [str(atom+1) for atom in ic]))
+            if show and kind != "3": print("             removing IC %s..."%("-".join( [str(atom+1) for atom in ic])))
+            if show and kind == "3": print("             removing IC %s..."%("=".join( [str(atom+1) for atom in ic])))
             # Finished?
             if get_nics(ics) == self._nvib: break
 
@@ -2549,7 +2557,7 @@ class Struct(object):
 
     def v0dir_grad(self):
         assert self._gms is not None, "ERROR: gms is None"
-        self._v0 = - self._gms / np.linalg.norm(self._gms)
+        self._v0 = old_div(- self._gms, np.linalg.norm(self._gms))
 
     def v0dir_check(self,dir_v0):
         coord, effect = dir_v0
@@ -2574,7 +2582,7 @@ class Struct(object):
         v0Fv0 = float( np.matrix(self._v0) * self._Fms * np.matrix(self._v0).transpose() )
         component_A = np.array(self._Fms * np.matrix(self._v0).transpose()).transpose()[0]
         component_B = v0Fv0*self._v0
-        self._v1 = (component_A - component_B) / np.linalg.norm(self._gms)
+        self._v1 = old_div((component_A - component_B), np.linalg.norm(self._gms))
 
     def nextTaylor(self,ds,bw=False,qt=False):
         '''
@@ -2618,12 +2626,12 @@ class Struct(object):
         for vibfreq in self._ccfreqs:
             f, v = vibfreq.get("wavenum"), vibfreq.get("evector")
             if f.imag != 0.0: f = - f.imag
-            f = f/cons.cm
+            f = old_div(f,cons.cm)
             molden.write(" %9.4f\n"%f)
             # As they are displacements, ms2cc_x has to be used
             if v is not None:
                evec = hf.ms2cc_x(v,self._masslist,self._mu)
-               evec = evec / np.linalg.norm(evec)
+               evec = old_div(evec, np.linalg.norm(evec))
                evecs.append( evec )
 
         molden.write("[FR-NORM-COORD] # Displacements in bohr\n")
@@ -2638,7 +2646,7 @@ class Struct(object):
         molden.close()
 
 
-class MEP():
+class MEP(object):
 
     def __init__(self):
 
@@ -2774,14 +2782,14 @@ class MEP():
         input_mep  = (self._ts, tuple_path, tuple_spc, tuple_ffs, self._mep, self._tvals, pprint)
         self._mep, self._tvals, infobw, infofw = get_mep(*input_mep)
 
-        self._mepl1 = sorted([mep_struct.get("meppoint") for mep_struct in self._mep.values()])
+        self._mepl1 = sorted([mep_struct.get("meppoint") for mep_struct in list(self._mep.values())])
         self._mepl2 = [mp for mp in self._mepl1 if self._mep[mp[1]].get("Fcc") is not None]
 
         if self._eref is None:
            self._eref = self._mep[self._mepl2[0][1]].get("Etot")
 
         # Define how imaginary frequencies are treated
-        for value in self._mep.values(): value._rmode = 2
+        for value in list(self._mep.values()): value._rmode = 2
 
 
         
@@ -2837,7 +2845,7 @@ class MEP():
                  icfreqs = [freq for freq in structure._icfreqs]
                  if mep_s == 0.0:
                     icfreqs = icfreqs[1:]
-                 if len(icfreqs) != len(ccfreqs): print error2; sys.exit()
+                 if len(icfreqs) != len(ccfreqs): print(error2); sys.exit()
                  ic_zpe  = sum([freq.get("zpe") for freq in icfreqs])
                  list1_ic.append(ic_zpe)
                  list2_ic.append( [str(freq) for freq in icfreqs] )
@@ -2971,10 +2979,10 @@ class MEP():
         # Calculation with reduced MEP
         if sctsteps  > 1:
            copy_Tlist  = list(self._Tlist)
-           print "           Convergence at %7.2f K:"%self._Tlist[0]
-           print "               -----------------------------------"
-           print "                  s_bw   |   s_fw   |  kappa_SCT  "
-           print "               -----------------------------------"
+           print("           Convergence at %7.2f K:"%self._Tlist[0])
+           print("               -----------------------------------")
+           print("                  s_bw   |   s_fw   |  kappa_SCT  ")
+           print("               -----------------------------------")
            self._Tlist = self._Tlist[0:1]
            kappas = []
            self._sbw += self._ds*self._hsteps
@@ -2984,10 +2992,10 @@ class MEP():
 
               SCT_T0, STRING = self.calculate_sct(sctbmf,self._sbw,self._sfw)
               kappas.append( (SCT_T0[0], self._sbw , self._sfw ) )
-              print "                %+8.4f | %+8.4f | %11.4E "%(self._sbw,self._sfw,SCT_T0[0])
+              print("                %+8.4f | %+8.4f | %11.4E "%(self._sbw,self._sfw,SCT_T0[0]))
               # Converged?
               if len(kappas) > 1 :
-                  diff = 100.0 * abs( (kappas[-1][0] - kappas[-2][0]) / kappas[-1][0] )
+                  diff = 100.0 * abs( old_div((kappas[-1][0] - kappas[-2][0]), kappas[-1][0]) )
                   if diff < sctvar: break
               # Set increase of MEP
               lbw = self._mepl2[ 0][1]
@@ -3003,8 +3011,8 @@ class MEP():
               # Calculate MEP
               self.calculate_mep(False)
               self.calculate_vadi()
-           print "               -----------------------------------"
-           print 
+           print("               -----------------------------------")
+           print() 
            self._Tlist = copy_Tlist
 
         # Calculate kappa for all T
@@ -3054,7 +3062,7 @@ class MEP():
             mepl2.append( (s,l) )
 
         # Locate s = 0.0 (if not, just half)
-        idx_ts = len(mepl2) / 2
+        idx_ts = old_div(len(mepl2), 2)
         for idx in range(len(mepl2)):
             s,l = mepl2[idx]
             if s == 0.0: idx_ts = idx
@@ -3079,8 +3087,8 @@ class MEP():
         for row in range(nrows):
               Vadi, qtot = data[row]
               # Save data as log to avoid big numbers!
-              exp      = np.exp(-(Vadi-ts_Vadi)/cons.kB/Tlist)
-              Kc       = qtot/ts_qtot * exp
+              exp      = np.exp(old_div(-(Vadi-ts_Vadi),cons.kB/Tlist))
+              Kc       = old_div(qtot,ts_qtot * exp)
               gibbs    = -cons.kB * Tlist * np.log(Kc)
               # Save data in kcal/mol
               gibbs_matrix[row,:] = gibbs * cons.kcalmol
@@ -3092,10 +3100,10 @@ class MEP():
         for col in range(ncols):
               y_values = gibbs_matrix[:,col]
               CVT_s, CVT_gibbs = hf.obtain_extremum(x_values,y_values,xtr="max")
-              CVT_gibbs = CVT_gibbs / cons.kcalmol
+              CVT_gibbs = old_div(CVT_gibbs, cons.kcalmol)
               # CVT values
               CVT_s     = float(CVT_s)
-              CVT_gamma = np.exp( -(CVT_gibbs/cons.kB/Tlist[col]))
+              CVT_gamma = np.exp( -(old_div(CVT_gibbs,cons.kB/Tlist[col])))
               # Correct value, just in case
               if CVT_gamma > 1.0: CVT_gamma = 1.0
               # Save data
@@ -3166,7 +3174,7 @@ def basic2Struct(name,xcc,atonums,ch,mtp,Etot,gcc,Fcc,stype=-1,masslist=None):
 #--------------------------------------#
 def xyz2Struct(xyzfile,name="",stype=0):
     xvector, symbols, masslist = hf.read_xyz(xyzfile)
-    xvector = xvector / cons.angstrom
+    xvector = old_div(xvector, cons.angstrom)
     structure = Struct(name,xvector,symbols,masslist=masslist,stype=stype)
     return structure, masslist
 #--------------------------------------#
@@ -3205,13 +3213,13 @@ def test():
     r_stretchings , r_bendings , r_waggings , r_torsions  = structure.graph_ricoords()
     nr_stretchings, nr_bendings, nr_waggings, nr_torsions = structure.graph_nricoords(utorsions)
 
-    for icoord in nr_stretchings: print icoord
-    print "--"
-    for icoord in nr_bendings   : print icoord
-    print "--"
-    for icoord in nr_waggings   : print icoord
-    print "--"
-    for icoord in nr_torsions   : print icoord
+    for icoord in nr_stretchings: print(icoord)
+    print("--")
+    for icoord in nr_bendings   : print(icoord)
+    print("--")
+    for icoord in nr_waggings   : print(icoord)
+    print("--")
+    for icoord in nr_torsions   : print(icoord)
 
     structure.calc_ccfreqs()
     ccfreqs = structure.get("ccfreqs")
@@ -3222,17 +3230,17 @@ def test():
     structure.calc_icfreqs(nr_stretchings, nr_bendings, [], nr_waggings+nr_torsions)
     nricfreqs = structure.get("icfreqs")
 
-    print "----"
+    print("----")
     for idx in range(len(ccfreqs)):
-        print ccfreqs[idx], ricfreqs[idx], nricfreqs[idx]
-    print "----"
+        print(ccfreqs[idx], ricfreqs[idx], nricfreqs[idx])
+    print("----")
 
-    print structure.graph_atostretchings(11)
-    print structure.graph_atobendings(11)
-    print structure.graph_atowaggings(11)
-    print structure.graph_nolinealangle(0,11)
-    print structure.graph_nolinealangle(11,0)
-    print structure.graph_torsion((0,11))
+    print(structure.graph_atostretchings(11))
+    print(structure.graph_atobendings(11))
+    print(structure.graph_atowaggings(11))
+    print(structure.graph_nolinealangle(0,11))
+    print(structure.graph_nolinealangle(11,0))
+    print(structure.graph_torsion((0,11)))
 
 #test()
 

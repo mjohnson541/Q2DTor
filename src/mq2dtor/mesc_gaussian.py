@@ -42,6 +42,10 @@ OTHER DEALINGS IN THE SOFTWARE.
  actions with the GAUSSIAN software
 
 '''
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import next
+from builtins import range
 import os
 import sys
 import shutil
@@ -68,19 +72,19 @@ def check_path():
     abort = False
     if (GEXEC is not None) and (GFCHK is not None):
        if not os.path.exists(GEXEC):
-          print "   ERROR: unable to find '%s'"%GEXEC
+          print("   ERROR: unable to find '%s'"%GEXEC)
           abort = True
        if not os.path.exists(GFCHK):
-          print "   ERROR: unable to find '%s'"%GFCHK
+          print("   ERROR: unable to find '%s'"%GFCHK)
           abort = True
     else:
        abort = True
        if not os.path.exists(txtfile):
-          print "   ERROR: unable to find '%s'"%txtfile
+          print("   ERROR: unable to find '%s'"%txtfile)
        elif GEXEC is None:
-          print "   ERROR: unable to find 'gauexe' in '%s'"%txtfile
+          print("   ERROR: unable to find 'gauexe' in '%s'"%txtfile)
        elif GFCHK is None:
-          print "   ERROR: unable to find 'fchk' in '%s'"%txtfile
+          print("   ERROR: unable to find 'fchk' in '%s'"%txtfile)
     if abort:
        sys.exit("   Aborting... Check output for more information.")
 #-------------------------------------------------#
@@ -262,9 +266,9 @@ def iofiles(name,folder=None):
 # SOME USEFUL FUNCTIONS #
 #-----------------------#
 def fchk2gts(mainname):
-    from helpfns import get_pgs
-    from gtsfile import write_gtsfile
-    import constants as cons
+    from .helpfns import get_pgs
+    from .gtsfile import write_gtsfile
+    from . import constants as cons
     x_cc , atonums, ch , mtp ,  E , g_cc, F_cc = readfchk(mainname+".fchk")
     masslist = [cons.dict_atomasses[atonum] for atonum in atonums]
     pgroup, sigma = get_pgs(atonums,masslist, x_cc)
@@ -480,7 +484,7 @@ def q2dtor_optCP(ilines,xvec,symbols,mainname,phis=(None,None)):
     ff = open(ifile,"w")
     ff.write(string_ifile)
     ff.close()
-    print "        * Geometry optimization + Freq calculation with Gaussian..."
+    print("        * Geometry optimization + Freq calculation with Gaussian...")
     status = sendcalc(ifile,ofile,err)
 
     # Check output
@@ -490,7 +494,7 @@ def q2dtor_optCP(ilines,xvec,symbols,mainname,phis=(None,None)):
     if "Normal termination" not in outlines[-1]: return None
 
     # Get data
-    print "        * Creating '%s' file"%fchk
+    print("        * Creating '%s' file"%fchk)
     status = genfchk(chk,fchk,err)
     xcc, atonums, ch, mtp,  Etot, gcc, Fcc = readfchk(fchk)
 

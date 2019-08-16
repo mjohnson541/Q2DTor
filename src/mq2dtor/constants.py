@@ -45,7 +45,10 @@ OTHER DEALINGS IN THE SOFTWARE.
       * dict_UFURC       ;  molecularity --> conversion factor
 
 '''
+from __future__ import division
 
+from builtins import range
+from past.utils import old_div
 import math
 
 #------------------------------------#
@@ -69,7 +72,7 @@ mC12_SI = 1.66053904E-027    # mass of C12        [kg]            #
 cal_SI  = 4.184              # 1 cal = 4.184 J                    #
 #----------------------------#------------------------------------#
 R_SI    = kB_SI *  NA_SI     # Ideal gas constant [J*K^-1*mol^-1] #
-hbar_SI =  h_SI / TWOPI      # Planck constant divided by 2pi     #
+hbar_SI =  old_div(h_SI, TWOPI)      # Planck constant divided by 2pi     #
 #----------------------------#------------------------------------#
 
 #-----------------------------------------------#
@@ -81,12 +84,12 @@ meter    = 0.52917721067E-10                    #
 second   = 1.0 / 4.1341373337e+16               #
 #-----------------------------------------------#
 angstrom = meter * 1E10                         #
-amu      = me_SI/mC12_SI                        #
+amu      = old_div(me_SI,mC12_SI)                        #
 kg       = me_SI                                #
-cal      = joule / cal_SI                       #
+cal      = old_div(joule, cal_SI)                       #
 kcal     = cal /1000.0                          #
 kjmol    = joule * NA_SI / 1000.0               #
-kcalmol  = kjmol / cal_SI                       #
+kcalmol  = old_div(kjmol, cal_SI)                       #
 jmol     = kjmol   * 1000.0                     #
 calmol   = kcalmol * 1000.0                     #
 meter3   = meter**3                             #
@@ -100,9 +103,9 @@ mL       = cm**3                                #
 h    = 2*math.pi              #
 hbar = 1.0                    #
 NA   = NA_SI                  #
-c0   = c0_SI / (meter/second) #
-kB   = kB_SI / (joule)        #
-me   = me_SI / (kg)           #
+c0   = old_div(c0_SI, (old_div(meter,second))) #
+kB   = old_div(kB_SI, (joule))        #
+me   = old_div(me_SI, (kg))           #
 R    = kB * NA                #
 h2c  = 1.0 / (h * c0) / cm    # hartree to 1/cm
 c2h  = 1.0/h2c                # 1/cm to hartree
@@ -151,7 +154,7 @@ dict_z2symbol.update({ 90:"Th", 91:"Pa", 92:"U ", 93:"Np", 94:"Pu", 95:"Am", 96:
 #--------------------------#
 # Symbol --> atomic number #
 #--------------------------#
-dict_symbol2z = dict((v.strip(),k) for k,v in dict_z2symbol.iteritems())
+dict_symbol2z = dict((v.strip(),k) for k,v in list(dict_z2symbol.items()))
 
 #-----------------#
 # Reference radii #
@@ -168,7 +171,7 @@ covraddi = covraddi + [1.87,1.75,1.70,1.62,1.51,1.44,1.41,1.36,1.36,1.32] # atom
 covraddi = covraddi + [1.45,1.46,1.48,1.40,1.50,1.50,2.60,2.21,2.15,2.06] # atoms Z = 81 to 90
 covraddi = covraddi + [2.00,1.96,1.90,1.87,1.80,1.69                    ] # atoms Z = 91 to 96
 # to bohr
-covraddi = [radius/angstrom for radius in covraddi]
+covraddi = [old_div(radius,angstrom) for radius in covraddi]
 # as a dict
 dict_covradii = {}
 for Z in range(96): dict_covradii[Z+1] = covraddi[Z]
@@ -199,7 +202,7 @@ atomasses = atomasses + [2.310359E+02,2.380508E+02,2.370482E+02,2.440642E+02,2.4
 atomasses = atomasses + [2.470703E+02,2.470703E+02,2.510796E+02,2.520829E+02,2.570751E+02] # atoms Z =  96 to 100
 atomasses = atomasses + [2.580986E+02,2.591009E+02,2.601053E+02                          ] # atoms Z = 101 to 103
 # in atomic units
-atomasses = [atomass/amu for atomass in atomasses]
+atomasses = [old_div(atomass,amu) for atomass in atomasses]
 # as a dict
 dict_atomasses = {}
 for Z in range(103): dict_atomasses[Z+1] = atomasses[Z]
@@ -217,5 +220,5 @@ dict_isomasses["13C"] = 13.003355   / amu # mass of C13       [a.m.u.]
 #----------------------------------------#
 dict_UFURC    = {}                                         
 dict_UFURC[1] = 1.0/second # s^-1                 
-dict_UFURC[2] =  mL/second # cm^3 / (molecule * s)
+dict_UFURC[2] =  old_div(mL,second) # cm^3 / (molecule * s)
 

@@ -42,7 +42,9 @@ OTHER DEALINGS IN THE SOFTWARE.
  actions with the ORCA software
 
 '''
+from __future__ import print_function
 
+from builtins import range
 import os, sys
 import time
 
@@ -66,14 +68,14 @@ def check_path():
     abort = False
     if OEXEC is not None:
        if not os.path.exists(OEXEC):
-          print "   ERROR: unable to find '%s'"%OEXEC
+          print("   ERROR: unable to find '%s'"%OEXEC)
           abort = True
     else:
        abort = True
        if not os.path.exists(txtfile):
-          print "   ERROR: unable to find '%s'"%txtfile
+          print("   ERROR: unable to find '%s'"%txtfile)
        else:
-          print "   ERROR: unable to find 'orca' in '%s'"%txtfile
+          print("   ERROR: unable to find 'orca' in '%s'"%txtfile)
     if abort:
        sys.exit("   Aborting... Check output for more information.")
 #-------------------------------------------------#
@@ -633,7 +635,7 @@ def q2dtor_optCP(ilines,xvec,symbols,mainname,phis=(None,None)):
     ff = open(ifile,"w")
     ff.write(string_ifile)
     ff.close()
-    print "        * Geometry optimization + Freq calculation with Orca..."
+    print("        * Geometry optimization + Freq calculation with Orca...")
     status = sendcalc(ifile,ofile,err)
 
     # Check ofile

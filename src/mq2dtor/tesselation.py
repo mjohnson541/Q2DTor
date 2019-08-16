@@ -38,8 +38,12 @@ OTHER DEALINGS IN THE SOFTWARE.
  This is a module for the tesselation
 
 ''' 
+from __future__ import division
+from __future__ import absolute_import
 
-import constants as cons
+from builtins import range
+from past.utils import old_div
+from . import constants as cons
 import numpy  as np
 from   scipy.optimize import brentq
 
@@ -53,16 +57,16 @@ def cross_point(p1,v1,p2,v2):
     # Calculate x and y coordinates
     if   v1[0] == 0.0:
          xx = x1
-         m2 = v2[1]/v2[0]
+         m2 = old_div(v2[1],v2[0])
          yy = m2*(xx-x2)+y2
     elif v2[0] == 0.0:
          xx = x2
-         m1 = v1[1]/v1[0]
+         m1 = old_div(v1[1],v1[0])
          yy = m1*(xx-x1)+y1
     else:
-         m1 = v1[1]/v1[0]
-         m2 = v2[1]/v2[0]
-         xx = ((m1*x1-y1)-(m2*x2-y2))/(m1-m2)
+         m1 = old_div(v1[1],v1[0])
+         m2 = old_div(v2[1],v2[0])
+         xx = old_div(((m1*x1-y1)-(m2*x2-y2)),(m1-m2))
          yy = m1*(xx-x1)+y1
     return np.array( [xx,yy] )
 
@@ -157,15 +161,15 @@ def get_Vmidpoints(delaunay,fPES):
         # Any point of triangle in interest region?
         if (not Ainside) and (not Binside) and (not Cinside): continue
         # Get mid points
-        if (idxA,idxB) not in midpoints.keys():
+        if (idxA,idxB) not in list(midpoints.keys()):
            midAB,tAB = get_pointVmid(pA,pB,fPES)
            midpoints[(idxA,idxB)] = midAB,tAB
            midpoints[(idxB,idxA)] = midAB,tAB
-        if (idxA,idxC) not in midpoints.keys():
+        if (idxA,idxC) not in list(midpoints.keys()):
            midAC,tAC = get_pointVmid(pA,pC,fPES)
            midpoints[(idxA,idxC)] = midAC,tAC
            midpoints[(idxC,idxA)] = midAC,tAC
-        if (idxB,idxC) not in midpoints.keys():
+        if (idxB,idxC) not in list(midpoints.keys()):
            midBC,tBC = get_pointVmid(pB,pC,fPES)
            midpoints[(idxB,idxC)] = midBC,tBC
            midpoints[(idxC,idxB)] = midBC,tBC
@@ -278,15 +282,15 @@ def method4_idx(p0,indices,delaunay,fPES,Vmidpoints):
        idx1, p1, V1, idx2, p2, V2 = idx2, p2, V2, idx1, p1, V1
 
     # Get middle point (in V) for the edge
-    if (idx1,idx2) in Vmidpoints.keys():
+    if (idx1,idx2) in list(Vmidpoints.keys()):
        pmid, tmid = Vmidpoints[(idx1,idx2)]
     else:
        pmid, tmid = get_pointVmid(p1,p2,fPES)
 
     # Value of t for the cross point
     v12 = p2 - p1
-    if abs(v12[0]) > abs(v12[1]): t_cross = (cross[0]-p1[0])/v12[0]
-    else                        : t_cross = (cross[1]-p1[1])/v12[1]
+    if abs(v12[0]) > abs(v12[1]): t_cross = old_div((cross[0]-p1[0]),v12[0])
+    else                        : t_cross = old_div((cross[1]-p1[1]),v12[1])
 
     if t_cross <= tmid: return idx1
     if t_cross >  tmid: return idx2
@@ -365,18 +369,18 @@ def method6_value(p0,triangle,delaunay,fPES,Vmidpoints,data4interp):
     p1 = np.array(delaunay.points[idx1])
     p2 = np.array(delaunay.points[idx2])
     # Get point with V=(VA+VB)/2
-    if (idx1,idx2) in Vmidpoints.keys():
+    if (idx1,idx2) in list(Vmidpoints.keys()):
        pmid, dummy = Vmidpoints[(idx1,idx2)]
     else:
        pmid, dummy = get_pointVmid(p1,p2,fPES)
     # Get value of t for the middle point (tm) and for the cross point (t)
     v12 = p2-p1
     if abs(v12[0]) > abs(v12[1]):
-       tm = ( pmid[0]-p1[0])/v12[0]
-       t  = (cross[0]-p1[0])/v12[0]
+       tm = old_div(( pmid[0]-p1[0]),v12[0])
+       t  = old_div((cross[0]-p1[0]),v12[0])
     else:
-       tm = ( pmid[1]-p1[1])/v12[1]
-       t  = (cross[1]-p1[1])/v12[1]
+       tm = old_div(( pmid[1]-p1[1]),v12[1])
+       t  = old_div((cross[1]-p1[1]),v12[1])
     if t> tm: idx = idx2
     else    : idx = idx1
 
@@ -398,9 +402,9 @@ def method6_value(p0,triangle,delaunay,fPES,Vmidpoints,data4interp):
     if eps2 == 0.0: eps2 = eps1
     DELTA = (Q2-Q1)/2.0
     if DELTA <= eps1: gamma1 = 0.0
-    else            : gamma1 = np.arctanh(eps1/DELTA-1.0)/(-tm)
+    else            : gamma1 = old_div(np.arctanh(old_div(eps1,DELTA)-1.0),(-tm))
     if DELTA <= eps2: gamma2 = 0.0
-    else            : gamma2 = np.arctanh(1.0-eps2/DELTA)/(1.0-tm)
+    else            : gamma2 = old_div(np.arctanh(1.0-old_div(eps2,DELTA)),(1.0-tm))
     gamma  = max(gamma1,gamma2)
     #gamma = 100.0 (with high value, we have method 4)
     # Value of the partition function
@@ -509,7 +513,7 @@ def replicate_points(molname,dict_points):
         if units == "deg": int_phi1, int_phi2 = int(round(phi1    )), int(round(phi2    ))
         return molname+"_%03i_%03i"%(int_phi1,int_phi2)
 
-    list_points = dict_points.keys()
+    list_points = list(dict_points.keys())
 
     for point_name in list_points:
         phi1 = dict_points[point_name][0]

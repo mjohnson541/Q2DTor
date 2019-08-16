@@ -5,7 +5,13 @@ This Python script is used to check the results for Q2DTor
 Needed files:
    * 
 """
+from __future__ import division
 
+from builtins import str
+from builtins import input
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 import os
 import shutil
 
@@ -63,7 +69,7 @@ def get_startend_blocks(lines):
 #=================================#
 def extract_Tlist(blocks):
     Tlist = []
-    if "Tlist" in blocks.keys():
+    if "Tlist" in list(blocks.keys()):
        for line in blocks["Tlist"]:
            Tlist += line.split()
        Tlist = [float(T) for T in Tlist]
@@ -929,7 +935,7 @@ def option_execute(FOLDER,CASE):
     PWD = os.getcwd()+"/"
     nohupfile = PWD+"nohup.out"
     # deal with answer
-    answer = raw_input("        >> ").strip()
+    answer = input("        >> ").strip()
     if   len(answer.split()) == 1: systems = sorted(dict_SXX.keys())
     elif len(answer.split()) == 2: systems = answer.split()[1:2]
     else                         : systems = answer.split()[1:]
@@ -1003,7 +1009,7 @@ def option_execute(FOLDER,CASE):
            else: continue
        # break infinite loop?
        if answer in ["a","b","c","d","e","f","g","h"]:
-          answer = raw_input("        >> ").strip()
+          answer = input("        >> ").strip()
           continue
        break
 #=================================#
@@ -1019,7 +1025,7 @@ def max_abs_diff(v1,v2):
 #---------------------------------#
 def max_rel_diff(v1,v2):
     if len(v1) != len(v2): return -1
-    mdiff  = 100*max([abs(v2-v1)/v1 for v1,v2 in zip(v1,v2)])
+    mdiff  = 100*max([old_div(abs(v2-v1),v1) for v1,v2 in zip(v1,v2)])
     return mdiff
 #---------------------------------#
 def option_check(FOLDER,root,CASE):
@@ -1032,7 +1038,7 @@ def option_check(FOLDER,root,CASE):
     # Reference file
     if root:
        print "    Reference file? "
-       reffile = raw_input("    >> ").strip()
+       reffile = input("    >> ").strip()
     else:
        if CASE == "1": reffile = "Q2DTor_RefData_GAUSSIAN.txt"
        if CASE == "2": reffile = "Q2DTor_RefData_ORCA.txt"
@@ -1054,7 +1060,7 @@ def option_check(FOLDER,root,CASE):
         if maxdiff == -1: exit("Number of temperatures differs!")
         if maxdiff > 1.0: print "kjgsadkjgasflh..."
         # common data
-        variables = list(set(data.keys()).intersection( data_ref[SXX].keys()))
+        variables = list(set(data.keys()).intersection( list(data_ref[SXX].keys())))
         # Compare data
         for variable in variables:
             vec1 = data_ref[SXX][variable]
@@ -1101,11 +1107,11 @@ def option_gendata(FOLDER):
     os.chdir(PWD)
     print
     # Write file
-    filename = raw_input("      Name of file with data? ").strip()
+    filename = input("      Name of file with data? ").strip()
     if filename in "": return
     if os.path.exists(filename):
         print "      File '%s' already exists!"%filename
-        answer = raw_input("      Overwrite (y/N)? ").strip().lower()
+        answer = input("      Overwrite (y/N)? ").strip().lower()
         if answer not in ["y","yes"]: return
     print "      Writing '%s'..."%filename
     write_ref_data(Tlist,DATA,filename)
@@ -1176,7 +1182,7 @@ def option_copyfrombackup(FOLDER,BKFOLDER):
     # Go system by system
     while True:
        # deal with answer
-       answer = raw_input("        >> ").strip()
+       answer = input("        >> ").strip()
        if   len(answer.split()) == 1: systems = sorted(dict_SXX.keys())
        elif len(answer.split()) == 2: systems = answer.split()[1:2]
        else                         : systems = answer.split()[1:]
@@ -1229,7 +1235,7 @@ def get_case(root):
     else:
        nn = 2
     print
-    CASE = raw_input(ibs+"your choice: ").strip()
+    CASE = input(ibs+"your choice: ").strip()
     print
     if CASE not in [str(i+1) for i in range(nn)]: exit()
     return CASE
@@ -1250,7 +1256,7 @@ def get_action(root):
        nn = 3
     print ibs+" ..  to exit"
     print
-    ACTION = raw_input(ibs+"your choice: ").strip()
+    ACTION = input(ibs+"your choice: ").strip()
     print
     if ACTION not in [str(i+1) for i in range(nn)]: exit()
     return ACTION

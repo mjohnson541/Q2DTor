@@ -38,10 +38,13 @@ OTHER DEALINGS IN THE SOFTWARE.
  A module to read and write gts files
 
 ''' 
+from __future__ import absolute_import
 
+from builtins import zip
+from builtins import range
 import os
-import constants  as cons
-import helpfns as hf
+from . import constants  as cons
+from . import helpfns as hf
 
 
 def read_gtsfile(gtsfile):

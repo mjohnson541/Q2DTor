@@ -132,8 +132,14 @@ Index to find things easily in the code to find things easily in the code:
        * writefile_xfit(fterms,popt,ofile,mode="w")
        * writefile_spinfo(f_spinfo,dict_CPs,icoords,Tlist,freqscal=1.0,masslist=None)
 '''
+from __future__ import division
+from __future__ import print_function
 
 # Tesselation
+from builtins import zip
+from builtins import str
+from builtins import range
+from past.utils import old_div
 TESSMODE     = 6
 TESSMODEPLOT = 4
 
@@ -227,7 +233,7 @@ def import_mes(software,function):
           from mq2dtor.mesc_orca     import q2dtor_optCP    as mes_optCP
 
     else:
-       print "        - ERROR: Unknown software (%s)\n"%software
+       print("        - ERROR: Unknown software (%s)\n"%software)
        sys.exit(EXITMESS)
 #----------------------------------------------------------#
 #----------------------------------------------------------#
@@ -287,7 +293,7 @@ def main():
     #---------------------#
     # Generate Input file #
     #---------------------#
-    if avail_args.keys() == []:
+    if list(avail_args.keys()) == []:
       if not os.path.isfile(ifile):
          writefile_inp(name)
          sys.exit("Q2DTor input file '%s' has been generated!\nPlease, check it and modify it"%ifile)
@@ -331,13 +337,13 @@ def main():
     # Print data in terminal? #
     #-------------------------#
     tprint = False
-    if "--print" in avail_args.keys(): tprint = True
+    if "--print" in list(avail_args.keys()): tprint = True
     sys.stdout = Logger(f_out,"a",tprint)
 
     #--------#
     # units? #
     #--------#
-    if "--SI" in avail_args.keys():
+    if "--SI" in list(avail_args.keys()):
        global HU1, HU2, SU1, SU2
        HU1 = cons.kjmol # human-units 1
        HU2 = cons.jmol  # human-units 1
@@ -347,11 +353,11 @@ def main():
     #-----------------------#
     # Now, option by option #
     #-----------------------#
-    if "--init" in avail_args.keys():
+    if "--init" in list(avail_args.keys()):
       sys.stdout = Logger(f_out,"w",tprint)
-      print q2dtor_getlogo()
+      print(q2dtor_getlogo())
       #---------------
-      print OPTSTRING1%("--init", "Initialization")
+      print(OPTSTRING1%("--init", "Initialization"))
       t1 = time.time()
       #---------------
       software = avail_args["--init"].lower()
@@ -363,11 +369,11 @@ def main():
       q2dtor_init(name,inpdata,files2read,files2write,software)
       #---------------
       t2 = time.time()
-      print OPTSTRING2%(hf.time2human(t2-t1,"secs"))
-      print OPTSTRING3%("--init")
+      print(OPTSTRING2%(hf.time2human(t2-t1,"secs")))
+      print(OPTSTRING3%("--init"))
 
-    elif "--pes" in avail_args.keys():
-      print OPTSTRING1%("--pes", "Calculation of the 2D-PES")
+    elif "--pes" in list(avail_args.keys()):
+      print(OPTSTRING1%("--pes", "Calculation of the 2D-PES"))
       t1 = time.time()
       #---------------
       inpdata     = (torsion1,torsion2,tsigma1,tsigma2,t1step,t2step,symmetry)
@@ -377,11 +383,11 @@ def main():
       q2dtor_pes(name,inpdata,files2read,files2write,f_ics)
       #---------------
       t2 = time.time()
-      print OPTSTRING2%(hf.time2human(t2-t1,"secs"))
-      print OPTSTRING3%("--pes")
+      print(OPTSTRING2%(hf.time2human(t2-t1,"secs")))
+      print(OPTSTRING3%("--pes"))
 
-    elif "--fourier" in avail_args.keys():
-      print OPTSTRING1%("--fourier", "Fitting the numerical 2D-PES to Fourier series")
+    elif "--fourier" in list(avail_args.keys()):
+      print(OPTSTRING1%("--fourier", "Fitting the numerical 2D-PES to Fourier series"))
       t1 = time.time()
       #---------------
       dphi1 = t1step * cons.R2D
@@ -395,11 +401,11 @@ def main():
       q2dtor_fourier(name,inpdata,files2read,files2write,TOTPESPOINTS)
       #---------------
       t2 = time.time()
-      print OPTSTRING2%(hf.time2human(t2-t1,"secs"))
-      print OPTSTRING3%("--fourier")
+      print(OPTSTRING2%(hf.time2human(t2-t1,"secs")))
+      print(OPTSTRING3%("--fourier"))
 
-    elif "--findsp" in avail_args.keys():
-      print OPTSTRING1%("--findsp", "Looking for stationary points in the fitted 2D-PES")
+    elif "--findsp" in list(avail_args.keys()):
+      print(OPTSTRING1%("--findsp", "Looking for stationary points in the fitted 2D-PES"))
       t1 = time.time()
       #---------------
       inpdata     = (symmetry,tsigma1,tsigma2,tolerance)
@@ -409,11 +415,11 @@ def main():
       q2dtor_findsp(name,inpdata,files2read,files2write)
       #---------------
       t2 = time.time()
-      print OPTSTRING2%(hf.time2human(t2-t1,"secs"))
-      print OPTSTRING3%("--findsp")
+      print(OPTSTRING2%(hf.time2human(t2-t1,"secs")))
+      print(OPTSTRING3%("--findsp"))
 
-    elif "--optsp" in avail_args.keys():
-      print OPTSTRING1%("--optsp" , "Optimizing the stationary points"   )
+    elif "--optsp" in list(avail_args.keys()):
+      print(OPTSTRING1%("--optsp" , "Optimizing the stationary points"   ))
       t1 = time.time()
       #---------------
       mode = avail_args["--optsp"]
@@ -425,11 +431,11 @@ def main():
       q2dtor_optsp(name,inpdata,files2read,files2write,Tlist,mode=mode)
       #---------------
       t2 = time.time()
-      print OPTSTRING2%(hf.time2human(t2-t1,"secs"))
-      print OPTSTRING3%("--optsp")
+      print(OPTSTRING2%(hf.time2human(t2-t1,"secs")))
+      print(OPTSTRING3%("--optsp"))
 
-    elif '--tor2dns' in avail_args.keys():
-      print OPTSTRING1%("--tor2dns" , "Calculating the 2D-NS torsional eigenvalues")
+    elif '--tor2dns' in list(avail_args.keys()):
+      print(OPTSTRING1%("--tor2dns" , "Calculating the 2D-NS torsional eigenvalues"))
       t1 = time.time()
       #---------------
       inpdata     = (torsion1,torsion2,fourier,symmetry,tsigma1,tsigma2,dijvar,kmax,maxeigen)
@@ -439,11 +445,11 @@ def main():
       q2dtor_tor2dns(name,inpdata,files2read,files2write,Tlist)
       #---------------
       t2 = time.time()
-      print OPTSTRING2%(hf.time2human(t2-t1,"secs"))
-      print OPTSTRING3%("--tor2dns")
+      print(OPTSTRING2%(hf.time2human(t2-t1,"secs")))
+      print(OPTSTRING3%("--tor2dns"))
 
-    elif '--rovibpf' in avail_args.keys():
-      print OPTSTRING1%("--rovibpf" , "Calculating 1WHO, MSHO, and E2DT partition functions")
+    elif '--rovibpf' in list(avail_args.keys()):
+      print(OPTSTRING1%("--rovibpf" , "Calculating 1WHO, MSHO, and E2DT partition functions"))
       t1 = time.time()
       #---------------
       thermo = False
@@ -456,16 +462,16 @@ def main():
       q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo)
       #---------------
       t2 = time.time()
-      print OPTSTRING2%(hf.time2human(t2-t1,"secs"))
-      print OPTSTRING3%("--rovibpf")
-      print
-      print random_quote("Q2DTor")
+      print(OPTSTRING2%(hf.time2human(t2-t1,"secs")))
+      print(OPTSTRING3%("--rovibpf"))
+      print()
+      print(random_quote("Q2DTor"))
 
     #----------------------------------#
     # recalculate PES by interpolation #
     #----------------------------------#
-    elif '--interpes' in avail_args.keys():
-      print OPTSTRING1%("--interpes" , "Temporal option")
+    elif '--interpes' in list(avail_args.keys()):
+      print(OPTSTRING1%("--interpes" , "Temporal option"))
       t1 = time.time()
       #---------------
       inpdata = (symmetry,tsigma1,tsigma2)
@@ -473,9 +479,9 @@ def main():
       q2dtor_interpes(name,inpdata,files2read)
       #---------------
       t2 = time.time()
-      print OPTSTRING2%(hf.time2human(t2-t1,"secs"))
-      print OPTSTRING3%("--interpes")
-      print
+      print(OPTSTRING2%(hf.time2human(t2-t1,"secs")))
+      print(OPTSTRING3%("--interpes"))
+      print()
 #----------------------------------------------------------#
 def get_arguments(head_message,hstring):
     
@@ -524,7 +530,7 @@ def get_arguments(head_message,hstring):
     flexible = False
     for idx in range(len(args)):
         coincidences = []
-        for key,value in avail_args.items():
+        for key,value in list(avail_args.items()):
             boolean, k, default = value
             if flexible:
                if not key.startswith(args[idx]): continue
@@ -556,7 +562,7 @@ def get_arguments(head_message,hstring):
 
     # Check arguments and return
     toreturn = {}
-    for key,(boolean, k, option) in avail_args.items():
+    for key,(boolean, k, option) in list(avail_args.items()):
         if boolean: toreturn[key] = option
     return ifile, toreturn
 #----------------------------------------------------------#
@@ -571,7 +577,7 @@ def get_arguments(head_message,hstring):
 #                                                          #
 # >>>>>>>>>>>>>>>>>>>>>>>>>> ## <<<<<<<<<<<<<<<<<<<<<<<<<< #
 def q2dtor_getlogo():
-    LOGO = random.choice(["A","B","C","D","E","F","G"])
+    LOGO = random.choice(["A","B","C","D","F","G"])
 
     head_message = "\n"
     head_message = head_message + "  #-----------------------------------------------------------------#\n"
@@ -620,15 +626,6 @@ def q2dtor_getlogo():
      head_message=head_message +'''  #     `"bmmd"'   Ammmmmmm .JMMmmmdP'     .JMML.`Ybmd9'.JMML.      #\n'''
      head_message=head_message +'''  #         MMb                                                     #\n'''
      head_message=head_message +'''  #          `bood'                                                 #\n'''
-
-    if LOGO=="E":
-     head_message=head_message +'''  #        ___    ____     ____    _____   U  ___ u   ____          #\n'''
-     head_message=head_message +'''  #       / " \  |___"\   |  _"\  |_ " _|   \/"_ \/U |  _"\ u       #\n'''
-     head_message=head_message +'''  #      | |"| | U __) | /| | | |   | |     | | | | \| |_) |/       #\n'''
-     head_message=head_message +'''  #     /| |_| |\\\/ __/ \U| |_| |\ /| |\.-,_| |_| |  |  _ <         #\n'''
-     head_message=head_message +'''  #     U \__\_\u|_____|u |____/ uu |_|U \_)-\___/   |_| \_\        #\n'''
-     head_message=head_message +'''  #        \\\//  <<  //    |||_   _// \\\_     \\\     //   \\\_       #\n'''
-     head_message=head_message +'''  #       (_(__)(__)(__)  (__)_) (__) (__)   (__)   (__)  (__)      #\n'''
 
     if LOGO=="F":
      head_message=head_message +'''  #      ________   ________  ________ ___________                  #\n'''
@@ -794,13 +791,13 @@ def q2dtor_init(name,inpdata,files2read,files2write,software):
     #-----------------------------------#
     # Print info needed from input file #
     #-----------------------------------#
-    print  "     Information from input file:"
-    print  "        * torsion1      %s"%("-".join(["%i"%(i+1) for i in torsion1]))
-    print  "        * torsion2      %s"%("-".join(["%i"%(i+1) for i in torsion2]))
-    print  "        * level         %s"%level
-    print  "        * charge        %s"%ch
-    print  "        * multiplicity  %s"%mtp
-    print 
+    print("     Information from input file:")
+    print("        * torsion1      %s"%("-".join(["%i"%(i+1) for i in torsion1])))
+    print("        * torsion2      %s"%("-".join(["%i"%(i+1) for i in torsion2])))
+    print("        * level         %s"%level)
+    print("        * charge        %s"%ch)
+    print("        * multiplicity  %s"%mtp)
+    print() 
 
     #------------#
     # Read files #
@@ -814,33 +811,33 @@ def q2dtor_init(name,inpdata,files2read,files2write,software):
     # Dealing with folders #
     #----------------------#
     if not os.path.exists(DIRFILES):
-       print  "     Creating folder: '%s'"%(DIRFILES)
+       print("     Creating folder: '%s'"%(DIRFILES))
        os.mkdir(DIRFILES)
-       print
+       print()
 
     #======><======#
 
     #----------------------#
     # Internal coordinates #
     #----------------------#
-    print "     Generation of (redundant) internal coordinates:"
+    print("     Generation of (redundant) internal coordinates:")
     if os.path.exists(f_ics):
-        print "        - File '%s' already exists"%f_ics
+        print("        - File '%s' already exists"%f_ics)
         ricoords, nics, bonds = readfile_ics(f_ics)
     else:
        structure.graph_autoconnect(lengthfactor=1.3)
        structure.graph_fragconnect()
        nbonds   = structure.graph_nbonds()
        poincare = 1 - structure.get("natoms") + nbonds
-       print "          nbonds + 1 - natoms = %i"%poincare
+       print("          nbonds + 1 - natoms = %i"%poincare)
        # Generate ricoords
        ricoords, nics = structure.gen_ricoords(torsions=[torsion1,torsion2],check=False)
        # Write ricoords
        bonds    = structure.graph_getbonds()
        writefile_ics(ricoords,f_ics,bonds)
-       print "        - Internal coordinates stored in '%s' "%f_ics
+       print("        - Internal coordinates stored in '%s' "%f_ics)
 
-    print "        - List of internal coordinates (%i)"%nics
+    print("        - List of internal coordinates (%i)"%nics)
     for idx in range(0,len(ricoords),5):
         line = ""
         for xx in range(5):
@@ -850,21 +847,21 @@ def q2dtor_init(name,inpdata,files2read,files2write,software):
             if tt=="3": ic = "=".join("%i"%(a+1) for a in ic)
             else      : ic = "-".join("%i"%(a+1) for a in ic)
             line = line + "  %11s  "%ic
-        print "     %s"%line
-    print
+        print("     %s"%line)
+    print()
 
     #-----------------------------#
     # Write reference input files #
     #-----------------------------#
-    print "     File generation for electronic structure calculations:"
+    print("     File generation for electronic structure calculations:")
     software = software.lower()
-    print "        - Selected software is '%s'"%software
+    print("        - Selected software is '%s'"%software)
     if os.path.exists(f_calcs):
-       print "        - File '%s' already exists"%f_calcs
+       print("        - File '%s' already exists"%f_calcs)
        ilines, software_in_file = readfile_calcs(f_calcs,"start_scangeom","end_scangeom")
        if software_in_file.lower() != software.lower():
-          print "        - ERROR: software in %s is '%s'"%(f_calcs,software_in_file)
-          print
+          print("        - ERROR: software in %s is '%s'"%(f_calcs,software_in_file))
+          print()
           sys.exit(EXITMESS)
     else:
        import_mes(software,"defaults")
@@ -872,8 +869,8 @@ def q2dtor_init(name,inpdata,files2read,files2write,software):
        ifile  = open(f_calcs,'w')
        ifile.write(string)
        ifile.close()
-       print "        - File '%s' has been created"%f_calcs
-    print
+       print("        - File '%s' has been created"%f_calcs)
+    print()
 #----------------------------------------------------------#
 def q2dtor_pes(name,inpdata,files2read,files2write,f_ics=None):
     global mes_pespoint
@@ -888,15 +885,15 @@ def q2dtor_pes(name,inpdata,files2read,files2write,f_ics=None):
     #-----------------------------------#
     # Print info needed from input file #
     #-----------------------------------#
-    print "     Information from the input file:"
-    print "        * torsion1      %s"%("-".join(["%i"%(i+1) for i in torsion1]))
-    print "        * torsion2      %s"%("-".join(["%i"%(i+1) for i in torsion2]))
-    print "        * tsigma1       %i"%tsigma1
-    print "        * tsigma2       %i"%tsigma2
-    print "        * steptorsion1  %.2f degrees"%(t1step*cons.R2D)
-    print "        * steptorsion2  %.2f degrees"%(t2step*cons.R2D)
-    print "        * symmetry      %s"%symmetry
-    print
+    print("     Information from the input file:")
+    print("        * torsion1      %s"%("-".join(["%i"%(i+1) for i in torsion1])))
+    print("        * torsion2      %s"%("-".join(["%i"%(i+1) for i in torsion2])))
+    print("        * tsigma1       %i"%tsigma1)
+    print("        * tsigma2       %i"%tsigma2)
+    print("        * steptorsion1  %.2f degrees"%(t1step*cons.R2D))
+    print("        * steptorsion2  %.2f degrees"%(t2step*cons.R2D))
+    print("        * symmetry      %s"%symmetry)
+    print()
     torsional_bonds = ( (torsion1[1],torsion1[2]) , (torsion2[1],torsion2[2]) )
 
     #------------#
@@ -913,8 +910,8 @@ def q2dtor_pes(name,inpdata,files2read,files2write,f_ics=None):
     connect = True
     if f_ics is not None:
        if os.path.isfile(f_ics):
-          print "      File '%s' exists: using its connectivity"%f_ics
-          print
+          print("      File '%s' exists: using its connectivity"%f_ics)
+          print()
           ics, nics, all_bonds = readfile_ics(f_ics)
           connect = False
           for (idx1,idx2) in all_bonds: structure.graph_addbond(idx1,idx2)
@@ -927,9 +924,9 @@ def q2dtor_pes(name,inpdata,files2read,files2write,f_ics=None):
     # Dealing with folders #
     #----------------------#
     if not os.path.exists(DIRFILES):
-       print  "     Creating folder: '%s'"%(DIRFILES)
+       print("     Creating folder: '%s'"%(DIRFILES))
        os.mkdir(DIRFILES)
-       print
+       print()
 
     #======><======#
 
@@ -938,21 +935,21 @@ def q2dtor_pes(name,inpdata,files2read,files2write,f_ics=None):
     # File from previous calculation #
     #--------------------------------#
     if not os.path.exists(f_pes):
-       print "      Creating a file with the PES energies: '%s'"%f_pes
+       print("      Creating a file with the PES energies: '%s'"%f_pes)
        dict_pes   = {}
        calculated = []
        MINENERGY  = float("inf")
        pes_file   = open(f_pes,'w')
        rewrite    = False
     else:
-       print "      File '%s' already exists:"%f_pes
+       print("      File '%s' already exists:"%f_pes)
        dict_pes, dummy, MINENERGY = readfile_pes(f_pes,exclude=False)
-       print "        * %i PES points stored"%len(dict_pes.keys())
-       print "        * Calculated points will be omitted"
-       calculated = dict_pes.keys()
+       print("        * %i PES points stored"%len(list(dict_pes.keys())))
+       print("        * Calculated points will be omitted")
+       calculated = list(dict_pes.keys())
        pes_file   = open(f_pes,'a')
        rewrite    = True
-    print
+    print()
 
     #-------------------#
     # Go point by point #
@@ -969,7 +966,7 @@ def q2dtor_pes(name,inpdata,files2read,files2write,f_ics=None):
        pespoints = pespoints.tolist()
        pespoints = pespoints[minidx:]+pespoints[minidx::-1]
     # start calculations
-    print "      Calculating PES (%i points)"%len(pespoints)
+    print("      Calculating PES (%i points)"%len(pespoints))
     MOs_previous = None
     pnames = []
     for phi1, phi2 in pespoints:
@@ -984,7 +981,7 @@ def q2dtor_pes(name,inpdata,files2read,files2write,f_ics=None):
               for (idx1,idx2) in all_bonds: structure.graph_addbond(idx1,idx2)
            #print "         %s: omitting calculation..."%point_name
            continue
-        print "         %s: calculating..."%point_name
+        print("         %s: calculating..."%point_name)
         #-------------------------#
         # Generate geometry guess #
         #-------------------------#
@@ -1023,9 +1020,9 @@ def q2dtor_pes(name,inpdata,files2read,files2write,f_ics=None):
         diff1 = abs(hf.angle_diff(calc_phi1,phi1))*cons.R2D
         diff2 = abs(hf.angle_diff(calc_phi2,phi2))*cons.R2D
         if diff1 > 0.2 or diff2 > 0.2:
-           print "  --> Final dihedrals in %s are wrong..."%point_name
-           print "      theta_1 is %5.1f and should be %5.1f"%(calc_phi1*cons.R2D,phi1*cons.R2D)
-           print "      theta_2 is %5.1f and should be %5.1f"%(calc_phi2*cons.R2D,phi2*cons.R2D)
+           print("  --> Final dihedrals in %s are wrong..."%point_name)
+           print("      theta_1 is %5.1f and should be %5.1f"%(calc_phi1*cons.R2D,phi1*cons.R2D))
+           print("      theta_2 is %5.1f and should be %5.1f"%(calc_phi2*cons.R2D,phi2*cons.R2D))
            sys.exit(EXITMESS)
         # Write in pes file
         pes_file.write(" %i\n"%len(symbols))
@@ -1036,37 +1033,37 @@ def q2dtor_pes(name,inpdata,files2read,files2write,f_ics=None):
             pes_file.write(" %-2s   %+13.6f  %+13.6f  %+13.6f\n"%(symbol,x,y,z))
         # Save in dict
         dict_pes[point_name] = [phi1,phi2,energy,xvec]
-    print
+    print()
 
-    print "      Minimum energy (EMIN) in calculated points is %+14.8f hartree"%MINENERGY
-    print
+    print("      Minimum energy (EMIN) in calculated points is %+14.8f hartree"%MINENERGY)
+    print()
     #pes_file.write("MINENERGY         %+14.8f\n"%MINENERGY)
     pes_file.close()
 
-    print "      phi1: torsion defined by atoms %s"%("-".join(["%i"%(i+1) for i in torsion1]))
-    print "      phi2: torsion defined by atoms %s"%("-".join(["%i"%(i+1) for i in torsion2]))
-    print
-    print "      PES Summary Table:"
-    print "                  ----------------------------"
-    print "                    phi1  |  phi2  | E - EMIN "
-    print "                  ----------------------------"
+    print("      phi1: torsion defined by atoms %s"%("-".join(["%i"%(i+1) for i in torsion1])))
+    print("      phi2: torsion defined by atoms %s"%("-".join(["%i"%(i+1) for i in torsion2])))
+    print()
+    print("      PES Summary Table:")
+    print("                  ----------------------------")
+    print("                    phi1  |  phi2  | E - EMIN ")
+    print("                  ----------------------------")
     for point_name in sorted(dict_pes.keys()):
         phi1,phi2,energy,xvec = dict_pes[point_name]
         if energy is None:
            linedata = (phi1*cons.R2D,phi2*cons.R2D,"   --   ")
-           print "                   %6.2f | %6.2f | %8s "%linedata
+           print("                   %6.2f | %6.2f | %8s "%linedata)
         else:
            linedata = (phi1*cons.R2D,phi2*cons.R2D,(energy-MINENERGY)*cons.h2c)
-           print "                   %6.2f | %6.2f | %8.2f "%linedata
-    print "                  ----------------------------"
-    print "                     phi1, phi2 in degrees    "
-    print "                     E-EMIN in cm^-1          "
-    print
+           print("                   %6.2f | %6.2f | %8.2f "%linedata)
+    print("                  ----------------------------")
+    print("                     phi1, phi2 in degrees    ")
+    print("                     E-EMIN in cm^-1          ")
+    print()
 
     # Rewrite all data
     if rewrite:
         fails = 0
-        print "      Rewriting '%s' file"%f_pes
+        print("      Rewriting '%s' file"%f_pes)
         pes_file = open(f_pes,'w')
         for point_name in sorted(dict_pes.keys()):
             phi1,phi2,energy,xvec = dict_pes[point_name]
@@ -1087,8 +1084,8 @@ def q2dtor_pes(name,inpdata,files2read,files2write,f_ics=None):
                    x,y,z = xvec[3*idx:3*idx+3] * cons.angstrom
                    pes_file.write(" %-2s   %+13.6f  %+13.6f  %+13.6f\n"%(symbol,x,y,z))
         pes_file.close()
-        print "        * Number of 'FAIL' points: %i"%fails
-        print
+        print("        * Number of 'FAIL' points: %i"%fails)
+        print()
 #----------------------------------------------------------#
 def q2dtor_fourier(name,inpdata,files2read,files2write,TOTPESPOINTS):
     #------------------------#
@@ -1117,7 +1114,7 @@ def q2dtor_fourier(name,inpdata,files2read,files2write,TOTPESPOINTS):
             elif term_type == "cossin": line = "%+11.4f * cos(%02i*phi1) * sin(%02i*phi2) +"%(parameter,idx1,idx2)
             elif term_type == "sinsin": line = "%+11.4f * sin(%02i*phi1) * sin(%02i*phi2) +"%(parameter,idx1,idx2)
             elif term_type == "sincos": line = "%+11.4f * sin(%02i*phi1) * cos(%02i*phi2) +"%(parameter,idx1,idx2)
-            else: print "Unknown term!"; sys.exit(EXITMESS)
+            else: print("Unknown term!"); sys.exit(EXITMESS)
             # Incorporate line
             data_string = data_string + " "*(nibs+17) + line
             if abs(parameter) < ignore: data_string = data_string + " [<--]"
@@ -1145,13 +1142,13 @@ def q2dtor_fourier(name,inpdata,files2read,files2write,TOTPESPOINTS):
     #-----------------------------------#
     # Print info needed from input file #
     #-----------------------------------#
-    print  "     Information read by the input file:"
-    print  "        * symmetry      %s"%symmetry
-    print  "        * tsigma1       %i"%tsigma1
-    print  "        * tsigma2       %i"%tsigma2
-    print  "        * weight        %.4f"%weight
-    print  "        * ignore        %.4f"%ignore
-    print
+    print("     Information read by the input file:")
+    print("        * symmetry      %s"%symmetry)
+    print("        * tsigma1       %i"%tsigma1)
+    print("        * tsigma2       %i"%tsigma2)
+    print("        * weight        %.4f"%weight)
+    print("        * ignore        %.4f"%ignore)
+    print()
 
     #------------#
     # Read files #
@@ -1165,9 +1162,9 @@ def q2dtor_fourier(name,inpdata,files2read,files2write,TOTPESPOINTS):
     # Dealing with folders #
     #----------------------#
     if not os.path.exists(DIRFILES):
-       print  "     Creating folder: '%s'"%(DIRFILES)
+       print("     Creating folder: '%s'"%(DIRFILES))
        os.mkdir(DIRFILES)
-       print
+       print()
 
     #======><======#
 
@@ -1175,48 +1172,48 @@ def q2dtor_fourier(name,inpdata,files2read,files2write,TOTPESPOINTS):
     #---------------------------#
     # Expand PES using symmetry #
     #---------------------------#
-    print  "     Applying symmetry conditions"
+    print("     Applying symmetry conditions")
     dict_pes = pessym_whole(name,dict_pes,symmetry,tsigma1,tsigma2,pprint=True)
-    print "                  ----------------------------"
-    print "                    phi1  |  phi2  | E - EMIN "
-    print "                  ----------------------------"
+    print("                  ----------------------------")
+    print("                    phi1  |  phi2  | E - EMIN ")
+    print("                  ----------------------------")
     for point_name in sorted(dict_pes.keys()):
         phi1,phi2,energy,xvec = dict_pes[point_name]
         linedata = (phi1*cons.R2D,phi2*cons.R2D,(energy-Eref)*cons.h2c)
-        print "                   %6.2f | %6.2f | %8.2f "%linedata
-    print "                  ----------------------------"
-    print "                     phi1, phi2 in degrees    "
-    print "                     E-EMIN in cm^-1          "
-    print
+        print("                   %6.2f | %6.2f | %8.2f "%linedata)
+    print("                  ----------------------------")
+    print("                     phi1, phi2 in degrees    ")
+    print("                     E-EMIN in cm^-1          ")
+    print()
 
-    points   = dict_pes.keys()
+    points   = list(dict_pes.keys())
     xdata    = np.array([tuple(dict_pes[point][0:2]) for point in points])
     ydata    = np.array([ (dict_pes[point][2]-Eref)*cons.h2c for point in points])
 
     # Limit values in ydata
     y_min  = min(ydata)
-    y_mean = sum(ydata) / len(ydata)
+    y_mean = old_div(sum(ydata), len(ydata))
     y_max  = max(ydata)
-    print "        * Minimum energy in potential is: %+9.2f cm^-1"%y_min
-    print "        * Average energy in potential is: %+9.2f cm^-1"%y_mean
-    print "        * Maximum energy in potential is: %+9.2f cm^-1"%y_max
+    print("        * Minimum energy in potential is: %+9.2f cm^-1"%y_min)
+    print("        * Average energy in potential is: %+9.2f cm^-1"%y_mean)
+    print("        * Maximum energy in potential is: %+9.2f cm^-1"%y_max)
     if len(ydata) != TOTPESPOINTS:
-       print "        * WARNING: the PES contains %i points instead of %i..."%(len(ydata),TOTPESPOINTS)
-    print
+       print("        * WARNING: the PES contains %i points instead of %i..."%(len(ydata),TOTPESPOINTS))
+    print()
 
     #------------------------#
     # Fourier series Fitting #
     #------------------------#
     # File with fitting already exists
-    print 
-    print  "     ===================================="
-    print  "      Performing a fit to Fourier series "
-    print  "     ===================================="
-    print
+    print() 
+    print("     ====================================")
+    print("      Performing a fit to Fourier series ")
+    print("     ====================================")
+    print()
     guess = [0.0]*len(fterms)
     if os.path.isfile(f_vfit):
-       print "        * File '%s' exists. Using its data as guess..."%f_vfit
-       print
+       print("        * File '%s' exists. Using its data as guess..."%f_vfit)
+       print()
        fterms2, parameters2, dummy = readfile_xfit(f_vfit)
        for idxA in range(len(fterms)):
            term = fterms[idxA]
@@ -1228,7 +1225,7 @@ def q2dtor_fourier(name,inpdata,files2read,files2write,TOTPESPOINTS):
 
     while True:
           # Print elements
-          print "        * Elements in Fourier series (%i):"%len(fterms)
+          print("        * Elements in Fourier series (%i):"%len(fterms))
           count_const  = 0
           count_cos1   = 0
           count_cos2   = 0
@@ -1248,20 +1245,20 @@ def q2dtor_fourier(name,inpdata,files2read,files2write,TOTPESPOINTS):
               if ft == "sincos"           : count_sincos += 1
               if ft == "cossin"           : count_cossin += 1
               if ft == "sinsin"           : count_sinsin += 1
-          print "          number of constants               : %i"%count_const
-          print "          number of cos(i*phi1)             : %i"%count_cos1
-          print "          number of cos(j*phi2)             : %i"%count_cos2
-          print "          number of sin(i*phi1)             : %i"%count_sin1
-          print "          number of sin(j*phi2)             : %i"%count_sin2
-          print "          number of cos(i*phi1).cos(j*phi2) : %i"%count_coscos
-          print "          number of sin(i*phi1).cos(j*phi2) : %i"%count_sincos
-          print "          number of cos(i*phi1).sin(j*phi2) : %i"%count_cossin
-          print "          number of sin(i*phi1).sin(j*phi2) : %i"%count_sinsin
+          print("          number of constants               : %i"%count_const)
+          print("          number of cos(i*phi1)             : %i"%count_cos1)
+          print("          number of cos(j*phi2)             : %i"%count_cos2)
+          print("          number of sin(i*phi1)             : %i"%count_sin1)
+          print("          number of sin(j*phi2)             : %i"%count_sin2)
+          print("          number of cos(i*phi1).cos(j*phi2) : %i"%count_coscos)
+          print("          number of sin(i*phi1).cos(j*phi2) : %i"%count_sincos)
+          print("          number of cos(i*phi1).sin(j*phi2) : %i"%count_cossin)
+          print("          number of sin(i*phi1).sin(j*phi2) : %i"%count_sinsin)
           # Create object and perform fitting
           FourierObject = Fourier2D(fterms)
           fterms2, fcoefs, fit_errors, fitting_time = FourierObject.fit(xdata,ydata,weight=weight,guess=guess)
           # Print result of fitting
-          print string_fitting(fterms2, fcoefs, ignore, fit_errors, fitting_time)
+          print(string_fitting(fterms2, fcoefs, ignore, fit_errors, fitting_time))
           # Remove small values
           finish = True
           fterms, guess = [], []
@@ -1286,9 +1283,9 @@ def q2dtor_fourier(name,inpdata,files2read,files2write,TOTPESPOINTS):
     vfit.write("reference %.7f \n"%Eref)
     vfit.close()
     # Now, write fitting
-    print "     Storing the fitting parameters at: %s"%f_vfit
+    print("     Storing the fitting parameters at: %s"%f_vfit)
     writefile_xfit(fterms2,fcoefs,f_vfit,mode='a')
-    print
+    print()
 #----------------------------------------------------------#
 def q2dtor_findsp(name,inpdata,files2read,files2write):
 
@@ -1302,12 +1299,12 @@ def q2dtor_findsp(name,inpdata,files2read,files2write):
     #-----------------------------------#
     # Print info needed from input file #
     #-----------------------------------#
-    print  "     Information read by the input file:"
-    print  "        * symmetry      %s"%symmetry
-    print  "        * tsigma1       %i"%tsigma1
-    print  "        * tsigma2       %i"%tsigma2
-    print  "        * tolerance     %.4f degrees"%(tolerance*cons.R2D)
-    print
+    print("     Information read by the input file:")
+    print("        * symmetry      %s"%symmetry)
+    print("        * tsigma1       %i"%tsigma1)
+    print("        * tsigma2       %i"%tsigma2)
+    print("        * tolerance     %.4f degrees"%(tolerance*cons.R2D))
+    print()
 
     #------------#
     # Read files #
@@ -1321,9 +1318,9 @@ def q2dtor_findsp(name,inpdata,files2read,files2write):
     # Dealing with folders #
     #----------------------#
     if not os.path.exists(DIRFILES):
-       print  "     Creating folder: '%s'"%(DIRFILES)
+       print("     Creating folder: '%s'"%(DIRFILES))
        os.mkdir(DIRFILES)
-       print
+       print()
 
     #======><======#
 
@@ -1334,7 +1331,7 @@ def q2dtor_findsp(name,inpdata,files2read,files2write):
     #-------------------------------#
     searchway, downhill = "A", True
    #searchway, downhill = "B", False
-    print "     Searching for stationary points in the fitted 2D-PES"
+    print("     Searching for stationary points in the fitted 2D-PES")
 
     Fourier_PES = Fourier2D(fterms)
     Fourier_PES.set_coefs(parameters)
@@ -1346,23 +1343,23 @@ def q2dtor_findsp(name,inpdata,files2read,files2write):
     npoints = len(phi1_list)
 
     if searchway == "A":
-       print "        * Generating a grid with PES values (step of %.2f degrees)..."%(tolerance*cons.R2D)
+       print("        * Generating a grid with PES values (step of %.2f degrees)..."%(tolerance*cons.R2D))
        pes_matrix = [[ Fourier_PES.value(phi1,phi2) for phi2 in phi2_list] for phi1 in phi1_list]
        # get difference in x- and y- direction
-       print "        * Generating gradient grid (x-component)..."
+       print("        * Generating gradient grid (x-component)...")
        grad_x = np.diff(pes_matrix,n=1,axis=0)
-       print "        * Generating gradient grid (y-component)..."
+       print("        * Generating gradient grid (y-component)...")
        grad_y = np.diff(pes_matrix,n=1,axis=1)
 
     if searchway == "B":
        # get grid with gradient
-       print "        * Generating gradient grid (x-component)..."
+       print("        * Generating gradient grid (x-component)...")
        grad_x = [[ Fourier_PES.derphi1(phi1, phi2) for phi2 in phi2_list] for phi1 in phi1_list]
-       print "        * Generating gradient grid (y-component)..."
+       print("        * Generating gradient grid (y-component)...")
        grad_y = [[ Fourier_PES.derphi2(phi1, phi2) for phi2 in phi2_list] for phi1 in phi1_list]
 
     cpoints = []
-    print "        * Looking for stationary points in the grid..."
+    print("        * Looking for stationary points in the grid...")
     DX = 0.1*cons.D2R
     DY = 0.1*cons.D2R
     for i in range(2,len(phi1_list)-2):
@@ -1410,9 +1407,9 @@ def q2dtor_findsp(name,inpdata,files2read,files2write):
                   V11 = pes_matrix[i-1][j-1]
                   V13 = pes_matrix[i+1][j-1]
                   V31 = pes_matrix[i-1][j+1]
-                  dxy = (V33+V11-V13-V31)/(2*tolerance*tolerance)
-                  dxx = (V24+V20-2.0*V22)/(2*tolerance*tolerance)
-                  dyy = (V42+V02-2.0*V22)/(2*tolerance*tolerance)
+                  dxy = old_div((V33+V11-V13-V31),(2*tolerance*tolerance))
+                  dxx = old_div((V24+V20-2.0*V22),(2*tolerance*tolerance))
+                  dyy = old_div((V42+V02-2.0*V22),(2*tolerance*tolerance))
 
                if searchway == "B":
                   V22 = Fourier_PES.value(phi1     ,phi2     )
@@ -1424,9 +1421,9 @@ def q2dtor_findsp(name,inpdata,files2read,files2write):
                   V11 = Fourier_PES.value(phi1-  DX,phi2-  DY)
                   V13 = Fourier_PES.value(phi1+  DX,phi2-  DY)
                   V31 = Fourier_PES.value(phi1-  DX,phi2+  DY)
-                  dxy = (V33+V11-V13-V31)/(2*DX*DY)
-                  dxx = (V24+V20-2.0*V22)/(2*DX*DX)
-                  dyy = (V42+V02-2.0*V22)/(2*DY*DY)
+                  dxy = old_div((V33+V11-V13-V31),(2*DX*DY))
+                  dxx = old_div((V24+V20-2.0*V22),(2*DX*DX))
+                  dyy = old_div((V42+V02-2.0*V22),(2*DY*DY))
 
                hessian = np.matrix([[dxx,dxy],[dxy,dyy]])
                evalues, evectors = np.linalg.eigh(hessian)
@@ -1438,21 +1435,21 @@ def q2dtor_findsp(name,inpdata,files2read,files2write):
     #------------------#
     # Print candidates #
     #------------------#
-    print "        * A total of %i candidates were found"%len(cpoints)
+    print("        * A total of %i candidates were found"%len(cpoints))
     for phi1,phi2,cptype,V in cpoints:
         if cptype == 0: xxx = "minimum"
         if cptype == 1: xxx = "saddle "
         if cptype == 2: xxx = "maximum"
-        print "            (%6.2f,%6.2f) ==> %s"%(phi1*cons.R2D,phi2*cons.R2D,xxx)
-    print
+        print("            (%6.2f,%6.2f) ==> %s"%(phi1*cons.R2D,phi2*cons.R2D,xxx))
+    print()
 
     #------------------------#
     # Improve candidate list #
     #------------------------#
-    print "     Improving list of candidates:"
+    print("     Improving list of candidates:")
 
     if downhill:
-       print "        * Improving position of minima and maxima with downhill algorithm..."
+       print("        * Improving position of minima and maxima with downhill algorithm...")
        new_cpoints = []
        for phi1,phi2,cptype,V in cpoints:
            if cptype == 1:
@@ -1469,31 +1466,31 @@ def q2dtor_findsp(name,inpdata,files2read,files2write):
            new_cpoints += [(nphi1,nphi2,cptype,V)]
            phi1, nphi1 = phi1*cons.R2D, nphi1*cons.R2D
            phi2, nphi2 = phi2*cons.R2D, nphi2*cons.R2D
-           print "            (%6.2f,%6.2f) --> (%6.2f,%6.2f)"%(phi1,phi2,nphi1,nphi2)
+           print("            (%6.2f,%6.2f) --> (%6.2f,%6.2f)"%(phi1,phi2,nphi1,nphi2))
        cpoints = new_cpoints
 
-    print "        * Applying symmetry conditions to each point..."
+    print("        * Applying symmetry conditions to each point...")
     new_cpoints = []
     for phi1,phi2,cptype,V in cpoints:
         equivalents = pessym_apply(phi1,phi2,symmetry,tsigma1,tsigma2)
         for p1,p2 in equivalents: new_cpoints += [ (p1,p2,cptype,V) ]
     cpoints = new_cpoints
 
-    print "        * Removing stationary points outside the symmetry region..."
+    print("        * Removing stationary points outside the symmetry region...")
     dict_cps = {}
     for phi1,phi2,cptype,V in cpoints:
         cpname = string_getpname(phi1,phi2,"","rad")
         keep   = pessym_inregion(phi1, phi2, symmetry, tsigma1, tsigma2)
         if keep: dict_cps[cpname] = [phi1,phi2,cptype,V]
 
-    print "        * Merging closed points..."
+    print("        * Merging closed points...")
     dict_cps = clean_close(dict_cps,diff_angle=15.0,diff_Ecm=10.0)
-    cpoints  = dict_cps.values()
+    cpoints  = list(dict_cps.values())
     cpoints.sort(key=lambda x: x[3]) # sort by energy
 
     repeated = []
     if "b" in symmetry:
-       print "        * Comparing energies of remaining points..."
+       print("        * Comparing energies of remaining points...")
        for idxA in range(len(cpoints)):
            phi1A, phi2A, cptypeA, VA = cpoints[idxA]
            for idxB in range(len(cpoints)):
@@ -1514,13 +1511,13 @@ def q2dtor_findsp(name,inpdata,files2read,files2write):
                else            : repeated.append( (idxA,idxB) )
                phi1A,phi2A = phi1A*cons.R2D,phi2A*cons.R2D
                phi1B,phi2B = phi1B*cons.R2D,phi2B*cons.R2D
-               print "            (%6.2f,%6.2f) <-> (%6.2f,%6.2f)"%(phi1A,phi2A,phi1B,phi2B)
+               print("            (%6.2f,%6.2f) <-> (%6.2f,%6.2f)"%(phi1A,phi2A,phi1B,phi2B))
        repeated = [idxB for idxA,idxB in repeated]
-       print
+       print()
           
 
     # Write list of points
-    print "     Storing the location of each stationary point at: %s"%f_splist
+    print("     Storing the location of each stationary point at: %s"%f_splist)
     statpoints = open(f_splist,'w')
     statpoints.write("#                                                                   \n")
     statpoints.write("#  List of stationary points (SP) in the 2D-PES                     \n")
@@ -1544,9 +1541,9 @@ def q2dtor_findsp(name,inpdata,files2read,files2write):
     statpoints.write("\n")
     statpoints.write("# Number of stationary points: %i\n"%ncps)
     statpoints.close()
-    print "                -------------------------------"
-    print "                  phi1  |  phi2  |  E (cm^-1)  "
-    print "                -------------------------------"
+    print("                -------------------------------")
+    print("                  phi1  |  phi2  |  E (cm^-1)  ")
+    print("                -------------------------------")
     num0 = 1
     num1 = 1
     num2 = 1
@@ -1557,9 +1554,9 @@ def q2dtor_findsp(name,inpdata,files2read,files2write):
         if cptype == 1: xxx = "TS_%02i"%num1; num1 +=1
         if cptype == 2: xxx = "MAX%02i"%num2; num2 +=1
         line = " %7s : %6.2f | %6.2f | %+9.2f "%(xxx,phi1*cons.R2D,phi2*cons.R2D,E)
-        print "      "+line
-    print "                -------------------------------"
-    print
+        print("      "+line)
+    print("                -------------------------------")
+    print()
 #----------------------------------------------------------#
 def q2dtor_optsp(name,inpdata,files2read,files2write,Tlist,mode="all"):
     global mes_optCP
@@ -1574,16 +1571,16 @@ def q2dtor_optsp(name,inpdata,files2read,files2write,Tlist,mode="all"):
     #-----------------------------------#
     # Print info needed from input file #
     #-----------------------------------#
-    print  "     Information read by the input file:"
-    print  "        * ttype         %s"%ttype
-    print  "        * torsion1      %s"%("-".join(["%i"%(i+1) for i in torsion1]))
-    print  "        * torsion2      %s"%("-".join(["%i"%(i+1) for i in torsion2]))
-    print  "        * symmetry      %s"%symmetry
-    print  "        * tsigma1       %i"%tsigma1
-    print  "        * tsigma2       %i"%tsigma2
-    print  "        * tolerance     %.4f"%(tolerance*cons.R2D)
-    print  "        * freqscal      %.3f"%freqscal
-    print
+    print("     Information read by the input file:")
+    print("        * ttype         %s"%ttype)
+    print("        * torsion1      %s"%("-".join(["%i"%(i+1) for i in torsion1])))
+    print("        * torsion2      %s"%("-".join(["%i"%(i+1) for i in torsion2])))
+    print("        * symmetry      %s"%symmetry)
+    print("        * tsigma1       %i"%tsigma1)
+    print("        * tsigma2       %i"%tsigma2)
+    print("        * tolerance     %.4f"%(tolerance*cons.R2D))
+    print("        * freqscal      %.3f"%freqscal)
+    print()
 
     #------------#
     # Read files #
@@ -1601,13 +1598,13 @@ def q2dtor_optsp(name,inpdata,files2read,files2write,Tlist,mode="all"):
     # Dealing with folders #
     #----------------------#
     if not os.path.exists(DIRFILES):
-       print  "     Creating folder: '%s'"%(DIRFILES)
+       print("     Creating folder: '%s'"%(DIRFILES))
        os.mkdir(DIRFILES)
-       print
+       print()
     if not os.path.exists(DIRSP):
-       print  "     Creating folder: '%s'"%(DIRSP)
+       print("     Creating folder: '%s'"%(DIRSP))
        os.mkdir(DIRSP)
-       print
+       print()
 
 
     #======><======#
@@ -1619,26 +1616,26 @@ def q2dtor_optsp(name,inpdata,files2read,files2write,Tlist,mode="all"):
     list_CPs = sp_sorting(dict_CPs)
     if mode != "all":
        if mode not in list_CPs:
-          print "     ERROR: '%s' is not defined in '%s' file"%(mode,f_splist)
-          print
+          print("     ERROR: '%s' is not defined in '%s' file"%(mode,f_splist))
+          print()
           sys.exit(EXITMESS)
        elif dict_CPs[mode][5] == "YES":
           message = "     '%s' has YES in the 'opt OK?' column of '%s' file"%(mode,f_splist)
-          print message
-          print
+          print(message)
+          print()
           sys.exit(message)
        elif dict_CPs[mode][5] != "NO":
-          print "     ERROR: '%s' has %s in the 'opt OK?' column of '%s' file"%(mode,dict_CPs[mode][5],f_splist)
-          print
+          print("     ERROR: '%s' has %s in the 'opt OK?' column of '%s' file"%(mode,dict_CPs[mode][5],f_splist))
+          print()
           sys.exit(EXITMESS)
-       print "     User has selected stationary point: %s"%(mode)
+       print("     User has selected stationary point: %s"%(mode))
        list_CPs = [mode]
        # Remove gts file
        gtsfile = DIRSP + mode + ".gts"
        if os.path.exists(gtsfile):
-          print "        * Removing file '%s'..."%gtsfile
+          print("        * Removing file '%s'..."%gtsfile)
           os.remove(gtsfile)
-       print 
+       print() 
 
     #--------------#
     # Optimization #
@@ -1648,13 +1645,13 @@ def q2dtor_optsp(name,inpdata,files2read,files2write,Tlist,mode="all"):
     for cp_name in list_CPs:
         phi1, phi2, cptype, Ecm, gtsfile = dict_CPs[cp_name][0:5]
         dict_warns[cp_name] = []
-        if cptype == 0: print  "     Optimization of %s (min)"%cp_name; ilines = ilines0; software = software0
-        if cptype == 1: print  "     Optimization of %s (ts )"%cp_name; ilines = ilines1; software = software1
-        if cptype == 2: print  "     Optimization of %s (max)"%cp_name; ilines = ilines2; software = software2
+        if cptype == 0: print("     Optimization of %s (min)"%cp_name); ilines = ilines0; software = software0
+        if cptype == 1: print("     Optimization of %s (ts )"%cp_name); ilines = ilines1; software = software1
+        if cptype == 2: print("     Optimization of %s (max)"%cp_name); ilines = ilines2; software = software2
         # Software
         import_mes(software,"optCP")
         # Optimization
-        if os.path.isfile(gtsfile): print "        * File '%s' exists; calculation omitted"%gtsfile
+        if os.path.isfile(gtsfile): print("        * File '%s' exists; calculation omitted"%gtsfile)
         else                      : sp_optimization(cp_name,symbols,dict_CPs,dict_pes,mes_optCP,ilines) 
         # Checking structure
         if not os.path.isfile(gtsfile):
@@ -1664,7 +1661,7 @@ def q2dtor_optsp(name,inpdata,files2read,files2write,Tlist,mode="all"):
         Etot, dict_warns = sp_checking(*idata_check)
         # Reference energy
         if Etot < min_sp : min_sp  = Etot
-        print
+        print()
 
     # Modify f_vfit and f_pes if minimum energy changes
     #change_Eref(Eref,min_sp,f_pes,f_vfit)
@@ -1673,10 +1670,10 @@ def q2dtor_optsp(name,inpdata,files2read,files2write,Tlist,mode="all"):
     # Rewrite splist file #
     #---------------------#
     sortedlist = sp_sorting(dict_CPs)
-    print "     Summary table (relative energy in cm^-1):"
-    print "                    -------------------------------"
-    print "                      phi1  |  phi2  |   energy    "
-    print "                    -------------------------------"
+    print("     Summary table (relative energy in cm^-1):")
+    print("                    -------------------------------")
+    print("                      phi1  |  phi2  |   energy    ")
+    print("                    -------------------------------")
 
     dict_lines = {}
     lineformat = "    %i      %6.2f   %6.2f     %+13.2f       %3s        %18s  \n"
@@ -1702,11 +1699,11 @@ def q2dtor_optsp(name,inpdata,files2read,files2write,Tlist,mode="all"):
            if cptype == 1: xxx = "TS_%02i"%num1; num1 += 1
            if cptype == 2: xxx = "MAX%02i"%num2; num2 += 1
            line = " %7s : %6.2f | %6.2f | %+9.2f "%(xxx,phi1*cons.R2D,phi2*cons.R2D,Ecm)
-           print "          "+line
-    print "                    -------------------------------"
-    print
+           print("          "+line)
+    print("                    -------------------------------")
+    print()
 
-    print "     Storing updated stationary point positions at: %s"%f_splist
+    print("     Storing updated stationary point positions at: %s"%f_splist)
     string_sp  = ""
     string_sp += "#                                                                   \n"
     string_sp += "#  List of stationary points (SP) in the 2D-PES                     \n"
@@ -1722,12 +1719,12 @@ def q2dtor_optsp(name,inpdata,files2read,files2write,Tlist,mode="all"):
     for E,line in sorted(dict_lines.values()): string_sp += line
     string_sp += "# -------------------------------------------------------------------------------\n"
     string_sp += "eref %.7f # hartree\n"%min_sp
-    string_sp += "# Number of stationary points: %i\n"%len(dict_lines.keys())
+    string_sp += "# Number of stationary points: %i\n"%len(list(dict_lines.keys()))
 
     finalsp = open(f_splist,"w")
     finalsp.write(string_sp)
     finalsp.close()
-    print
+    print()
 
     #----------------------#
     # Internal coordinates #
@@ -1742,14 +1739,14 @@ def q2dtor_optsp(name,inpdata,files2read,files2write,Tlist,mode="all"):
     #-------------------#
     # Indicate warnings #
     #-------------------#
-    for cpname,warns in dict_warns.items():
+    for cpname,warns in list(dict_warns.items()):
         if warns == []: continue
-        print "     Warnings in stationary point '%s':"%cpname
-        if 1 in warns: print "           - gts file not found"
-        if 2 in warns: print "           - gts file does not contain hessian"
-        if 3 in warns: print "           - dihedrals changed significantly"
-        if 4 in warns: print "           - incorrect number of real/imag frequencies"
-        print 
+        print("     Warnings in stationary point '%s':"%cpname)
+        if 1 in warns: print("           - gts file not found")
+        if 2 in warns: print("           - gts file does not contain hessian")
+        if 3 in warns: print("           - dihedrals changed significantly")
+        if 4 in warns: print("           - incorrect number of real/imag frequencies")
+        print() 
 
 #----------------------------------------------------------#
 def q2dtor_dijfitting(name,tuple_fit,icoords,symmetry,tsigma1,tsigma2,f_pes,file_Dfit,masslist=None):
@@ -1762,7 +1759,7 @@ def q2dtor_dijfitting(name,tuple_fit,icoords,symmetry,tsigma1,tsigma2,f_pes,file
     dict_pes, symbols, Eref = readfile_pes(f_pes) # incomplete data
 
     list_dij = []
-    for pes_point in dict_pes.keys():
+    for pes_point in list(dict_pes.keys()):
         xvec = dict_pes[pes_point][3]
         structure = Struct("",xvec,symbols,masslist,-1)
         structure.basic_setups([0,3])
@@ -1772,15 +1769,15 @@ def q2dtor_dijfitting(name,tuple_fit,icoords,symmetry,tsigma1,tsigma2,f_pes,file
         rI2  = + Dmatrix[1,1]
         l12  = - Dmatrix[0,1]
         detD = rI1*rI2 - l12*l12
-        d11  = 100*(rI2/detD)
-        d22  = 100*(rI1/detD)
-        d12  = 100*(l12/detD)
+        d11  = 100*(old_div(rI2,detD))
+        d22  = 100*(old_div(rI1,detD))
+        d12  = 100*(old_div(l12,detD))
         dij_tuple = np.array( (d11,d22,d12) )
         dict_pes[pes_point] = dict_pes[pes_point] + [dij_tuple]
         
     dict_pes = pessym_whole(name,dict_pes,symmetry,tsigma1,tsigma2)
 
-    list_pes = dict_pes.keys()
+    list_pes = list(dict_pes.keys())
     xdata    = np.array([tuple(dict_pes[point][0:2]) for point in list_pes])
 
     ##########################################
@@ -1799,7 +1796,7 @@ def q2dtor_dijfitting(name,tuple_fit,icoords,symmetry,tsigma1,tsigma2,f_pes,file
         if dij == "d22": ydata = [dict_pes[pes_point][-1][1] for pes_point in list_pes]
         if dij == "d12": ydata = [dict_pes[pes_point][-1][2] for pes_point in list_pes]
         y_min  = min(ydata)
-        y_mean = sum(ydata) / len(ydata)
+        y_mean = old_div(sum(ydata), len(ydata))
         y_max  = max(ydata)
        #print "          - Min. 100*%s value is: %+9.2f"%(dij,y_min)
        #print "          - Avg. 100*%s value is: %+9.2f"%(dij,y_mean)
@@ -1850,17 +1847,17 @@ def q2dtor_tor2dns(name,inpdata,files2read,files2write,Tlist):
     #-----------------------------------#
     # Print info needed from input file #
     #-----------------------------------#
-    print  "     Information from input file:"
-    print  "        * torsion1      %s"%("-".join(["%i"%(i+1) for i in torsion1]))
-    print  "        * torsion2      %s"%("-".join(["%i"%(i+1) for i in torsion2]))
-    print  "        * symmetry      %s"%symmetry
-    print  "        * tsigma1       %i"%tsigma1
-    print  "        * tsigma2       %i"%tsigma2
-    if dijvar: print  "        * dijvar        yes"
-    else     : print  "        * dijvar        no"
-    print  "        * kmax          %i"%kmax
-    print  "        * maxeigen      %.2f cm^-1"%maxeigen
-    print
+    print("     Information from input file:")
+    print("        * torsion1      %s"%("-".join(["%i"%(i+1) for i in torsion1])))
+    print("        * torsion2      %s"%("-".join(["%i"%(i+1) for i in torsion2])))
+    print("        * symmetry      %s"%symmetry)
+    print("        * tsigma1       %i"%tsigma1)
+    print("        * tsigma2       %i"%tsigma2)
+    if dijvar: print("        * dijvar        yes")
+    else     : print("        * dijvar        no")
+    print("        * kmax          %i"%kmax)
+    print("        * maxeigen      %.2f cm^-1"%maxeigen)
+    print()
 
 
     #------------#
@@ -1880,9 +1877,9 @@ def q2dtor_tor2dns(name,inpdata,files2read,files2write,Tlist):
     # Dealing with folders #
     #----------------------#
     if not os.path.exists(DIRFILES):
-       print  "     Creating folder: '%s'"%(DIRFILES)
+       print("     Creating folder: '%s'"%(DIRFILES))
        os.mkdir(DIRFILES)
-       print
+       print()
 
 
     #======><======#
@@ -1891,26 +1888,26 @@ def q2dtor_tor2dns(name,inpdata,files2read,files2write,Tlist):
     #--------------------#
     # Deal with energies #
     #--------------------#
-    print "     Analyzing minimum energy:"
+    print("     Analyzing minimum energy:")
     EMIN_pes = float("inf")
-    for value in dict_pes.values():
+    for value in list(dict_pes.values()):
         if value[2] < EMIN_pes : EMIN_pes = value[2]
-    print "        - Mininum energy in numeric PES: %+13.7f hartree"%EMIN_pes
+    print("        - Mininum energy in numeric PES: %+13.7f hartree"%EMIN_pes)
     try:
         EMIN_sp = float("inf")
-        for value in dict_CPs.values():
+        for value in list(dict_CPs.values()):
             struct_instance = gts2Struct(value[4])
             if struct_instance.get("Etot") < EMIN_sp : EMIN_sp = struct_instance.get("Etot")
-        print "        - Mininum energy in Fourier PES: %+13.7f hartree"%EMIN_sp
+        print("        - Mininum energy in Fourier PES: %+13.7f hartree"%EMIN_sp)
         if EMIN_sp < EMIN_pes:
-           dE = (EMIN_pes-EMIN_sp) / cons.h / cons.c0 / cons.cm
-           print "        - Reference energy in Fourier PES will be changed:"
+           dE = old_div((EMIN_pes-EMIN_sp), cons.h / cons.c0 / cons.cm)
+           print("        - Reference energy in Fourier PES will be changed:")
            for idx in range(len(fterms)):
                if fterms[idx][0] == 'const':
-                  print "          * Constant term in Fourier potential was   : %+11.5f cm^-1"%(parameters[idx])
+                  print("          * Constant term in Fourier potential was   : %+11.5f cm^-1"%(parameters[idx]))
                   parameters[idx] = parameters[idx] + dE
-                  print "          * Constant term in Fourier potential is now: %+11.5f cm^-1"%(parameters[idx])
-        print
+                  print("          * Constant term in Fourier potential is now: %+11.5f cm^-1"%(parameters[idx]))
+        print()
     except:
         EMIN_sp = EMIN_pes
 
@@ -1924,61 +1921,61 @@ def q2dtor_tor2dns(name,inpdata,files2read,files2write,Tlist):
     #----------------#
     CALCULATE = True
     if os.path.isfile(f_evals):
-       print "     File '%s' already exists"%f_evals
-       print "        - Data comparison (file,input):"
+       print("     File '%s' already exists"%f_evals)
+       print("        - Data comparison (file,input):")
        datainfile = readfile_evals(f_evals)
        evalues    = datainfile[0]
        dif_kmax   = datainfile[1]
        dif_dijvar = datainfile[2]
-       print "          kmax   ==> (%3i,%3i)"%(dif_kmax,kmax)
-       if       dif_dijvar and     dijvar: print "          dijvar ==> (yes,yes)"
-       elif     dif_dijvar and not dijvar: print "          dijvar ==> (yes, no)"
-       elif not dif_dijvar and     dijvar: print "          dijvar ==> ( no,yes)"
-       else                              : print "          dijvar ==> ( no, no)"
+       print("          kmax   ==> (%3i,%3i)"%(dif_kmax,kmax))
+       if       dif_dijvar and     dijvar: print("          dijvar ==> (yes,yes)")
+       elif     dif_dijvar and not dijvar: print("          dijvar ==> (yes, no)")
+       elif not dif_dijvar and     dijvar: print("          dijvar ==> ( no,yes)")
+       else                              : print("          dijvar ==> ( no, no)")
        if dif_dijvar == dijvar:
-          if   dif_kmax == kmax: print "        - Calculation omitted!"; CALCULATE = False
-          elif dif_kmax  > kmax: print "        - Calculation omitted! (kmax in '%s' is bigger)"%f_evals; CALCULATE = False
-       print
+          if   dif_kmax == kmax: print("        - Calculation omitted!"); CALCULATE = False
+          elif dif_kmax  > kmax: print("        - Calculation omitted! (kmax in '%s' is bigger)"%f_evals); CALCULATE = False
+       print()
 
     if CALCULATE:
        #-------------------------------#
        # (a) dij variation is required #
        #-------------------------------#
        if dijvar:
-          print "     Dependence of dij terms with (phi1,phi2) is required"
+          print("     Dependence of dij terms with (phi1,phi2) is required")
           fitdij = True
           if os.path.exists(f_dfit):
-             print "        * File '%s' already exists:"%(f_dfit)
+             print("        * File '%s' already exists:"%(f_dfit))
              d11_terms, d11_coefs, dummy = readfile_xfit(f_dfit,"d11")
              d12_terms, d12_coefs, dummy = readfile_xfit(f_dfit,"d12")
              d22_terms, d22_coefs, dummy = readfile_xfit(f_dfit,"d22")
              if d11_coefs == [] or d12_coefs == [] or d22_coefs == []:
-                print "          - Something wrong in file '%s'! File will overwritten...\n"%f_dfit
+                print("          - Something wrong in file '%s'! File will overwritten...\n"%f_dfit)
              else:
                 fitdij = False
-                print "          - dij fitting will be omitted"
+                print("          - dij fitting will be omitted")
           # Perform dij fitting to Fourier Series
           if fitdij:
-             print "        * Fitting dij elements across 2D-PES..."
+             print("        * Fitting dij elements across 2D-PES...")
              q2dtor_dijfitting(name,vfit,icoords,symmetry,tsigma1,tsigma2,f_pes,f_dfit,masslist)
-             print "        * File '%s' with fittings for dij elements was created"%f_dfit
+             print("        * File '%s' with fittings for dij elements was created"%f_dfit)
           # read dfit file
           d11_terms, d11_coefs, dummy = readfile_xfit(f_dfit,"d11")
           d12_terms, d12_coefs, dummy = readfile_xfit(f_dfit,"d12")
           d22_terms, d22_coefs, dummy = readfile_xfit(f_dfit,"d22")
           if d11_coefs == [] or d12_coefs == [] or d22_coefs == []:
-             print "        * Something wrong in file '%s'!\n"%f_dfit
+             print("        * Something wrong in file '%s'!\n"%f_dfit)
              sys.exit(EXITMESS)
           dijtuple = [ (d11_terms,d11_coefs) , (d12_terms,d12_coefs) , (d22_terms,d22_coefs) ]
        #-----------------------------------#
        # (b) dij variation is not required #
        #-----------------------------------#
        else:
-          print "     Dependence of dij terms with (phi1,phi2) is not required"
-          E_min, cpname_min = sorted([ (dict_CPs[cp_name][3],cp_name) for cp_name in dict_CPs.keys() ])[0]
-          print "        * dij values will be defined by '%s'"%(cpname_min)
+          print("     Dependence of dij terms with (phi1,phi2) is not required")
+          E_min, cpname_min = sorted([ (dict_CPs[cp_name][3],cp_name) for cp_name in list(dict_CPs.keys()) ])[0]
+          print("        * dij values will be defined by '%s'"%(cpname_min))
           gtsfile = DIRSP+cpname_min+".gts"
-          print "        * reading file: %s"%(gtsfile)
+          print("        * reading file: %s"%(gtsfile))
           structure = gts2Struct(gtsfile,"",masslist)
           structure.basic_setups([0,3])
           Dmatrix = structure.get_Dmatrix(icoords)
@@ -1986,15 +1983,15 @@ def q2dtor_tor2dns(name,inpdata,files2read,files2write,Tlist):
           rI1 = Dmatrix[0,0] * cons.amu * cons.angstrom**2
           rI2 = Dmatrix[1,1] * cons.amu * cons.angstrom**2
           dijtuple = [rI1,rI2]
-       print
+       print()
 
        #----------------------------#
        # 2DNS torsional Hamiltonian #
        #----------------------------#
-       print "     Torsional Hamiltonian matrix:"
-       print "        * Calculating..."
+       print("     Torsional Hamiltonian matrix:")
+       print("        * Calculating...")
        fil,col,ham2d = tor2DNS_hamiltonian(name, fterms, parameters, dijvar, dijtuple, nums, kmax)
-       print "        * Diagonalizing..."
+       print("        * Diagonalizing...")
        evalues  = tor2DNS_diagonalization(kmax,fil,col,ham2d,dijvar,f_evals,ENERMAX=maxeigen)
 
        #---------------#
@@ -2004,31 +2001,31 @@ def q2dtor_tor2dns(name,inpdata,files2read,files2write,Tlist):
        for evalue in evalues:
            if evalue<0: negative = True
        if negative:
-         print "        * Negative evalues have been obtained... You should check Hamiltonian options..."
-       print
+         print("        * Negative evalues have been obtained... You should check Hamiltonian options...")
+       print()
 
     #---------------#
     # Print evalues #
     #---------------#
-    print "     2DNS eigenvalues (cm^-1):"
+    print("     2DNS eigenvalues (cm^-1):")
     for idx in range(0,len(evalues),8):
-        print "            " + "  ".join(["%8.2f"%evalue for evalue in evalues[idx:idx+8]])
-    print
+        print("            " + "  ".join(["%8.2f"%evalue for evalue in evalues[idx:idx+8]]))
+    print()
 
     #------------------------------#
     # Calculate partition function #
     #------------------------------#
-    print "     2DNS partition function:"
-    print "       ---------------------"
-    print "         T (K)  | 2D-NS pfn "
-    print "       ---------------------"
+    print("     2DNS partition function:")
+    print("       ---------------------")
+    print("         T (K)  | 2D-NS pfn ")
+    print("       ---------------------")
     evalues   = [ Ecm * cons.c2h for Ecm  in evalues]
     for T in sorted(Tlist):
         beta = 1.0 / cons.kB / T
         ptfn_2DNS = sum([np.exp(-E*beta) for E in evalues]) / float(tsigma1) / float(tsigma2)
-        print "        %7.2f | %9.3E "%(T,ptfn_2DNS)
-    print "       ---------------------"
-    print
+        print("        %7.2f | %9.3E "%(T,ptfn_2DNS))
+    print("       ---------------------")
+    print()
 #----------------------------------------------------------#
 def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
 
@@ -2043,17 +2040,17 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
     #-----------------------------------#
     # Print info needed from input file #
     #-----------------------------------#
-    print  "     Information needed from input file:"
-    print  "        * torsion1         %s"%("-".join(["%i"%(i+1) for i in torsion1]))
-    print  "        * torsion2         %s"%("-".join(["%i"%(i+1) for i in torsion2]))
-    print  "        * ttype            %s"%ttype
-    print  "        * symmetry         %s"%symmetry
-    print  "        * tsigma1          %i"%tsigma1
-    print  "        * tsigma2          %i"%tsigma2
-    print  "        * interpolation    %s"%interpolation
-    print  "        * integrationstep  %.3f degrees"%(integrationstep*cons.R2D)
-    print  "        * freqscal         %.3f"%freqscal
-    print
+    print("     Information needed from input file:")
+    print("        * torsion1         %s"%("-".join(["%i"%(i+1) for i in torsion1])))
+    print("        * torsion2         %s"%("-".join(["%i"%(i+1) for i in torsion2])))
+    print("        * ttype            %s"%ttype)
+    print("        * symmetry         %s"%symmetry)
+    print("        * tsigma1          %i"%tsigma1)
+    print("        * tsigma2          %i"%tsigma2)
+    print("        * interpolation    %s"%interpolation)
+    print("        * integrationstep  %.3f degrees"%(integrationstep*cons.R2D))
+    print("        * freqscal         %.3f"%freqscal)
+    print()
 
     #------------#
     # Read files #
@@ -2071,36 +2068,36 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
     # Dealing with folders #
     #----------------------#
     if not os.path.exists(DIRFILES):
-       print  "     Creating folder: '%s'"%(DIRFILES)
+       print("     Creating folder: '%s'"%(DIRFILES))
        os.mkdir(DIRFILES)
-       print
+       print()
 
     #======><======#
 
     #--------------------#
     # Deal with energies #
     #--------------------#
-    print "     Analyzing minimum energy:"
+    print("     Analyzing minimum energy:")
     if EMIN_vfit is None: EMIN_vfit = EMIN_pes
     if EMIN_sp is None:
        EMIN_sp = float("inf")
-       for value in dict_CPs.values():
+       for value in list(dict_CPs.values()):
            struct_instance = gts2Struct(value[4])
            if struct_instance.get("Etot") < EMIN_sp : EMIN_sp = struct_instance.get("Etot") 
 
-    print "        - Mininum energy in numeric PES         : %+13.7f hartree"%EMIN_pes
-    print "        - Mininum energy in Fourier PES         : %+13.7f hartree"%EMIN_vfit
-    print "        - Mininum energy among stationary points: %+13.7f hartree"%EMIN_sp
+    print("        - Mininum energy in numeric PES         : %+13.7f hartree"%EMIN_pes)
+    print("        - Mininum energy in Fourier PES         : %+13.7f hartree"%EMIN_vfit)
+    print("        - Mininum energy among stationary points: %+13.7f hartree"%EMIN_sp)
 
     if EMIN_sp < EMIN_vfit:
-       dE = (EMIN_vfit-EMIN_sp) / cons.h / cons.c0 / cons.cm
-       print "        - Correcting Fourier PES:"
+       dE = old_div((EMIN_vfit-EMIN_sp), cons.h / cons.c0 / cons.cm)
+       print("        - Correcting Fourier PES:")
        for idx in range(len(fterms)):
            if fterms[idx][0] == 'const':
-              print "          * Constant term in Fourier potential was   : %+11.5f cm^-1"%(parameters[idx])
+              print("          * Constant term in Fourier potential was   : %+11.5f cm^-1"%(parameters[idx]))
               parameters[idx] = parameters[idx] + dE
-              print "          * Constant term in Fourier potential is now: %+11.5f cm^-1"%(parameters[idx])
-    print
+              print("          * Constant term in Fourier potential is now: %+11.5f cm^-1"%(parameters[idx]))
+    print()
 
 
     #-------------------------------#
@@ -2118,7 +2115,7 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
     # Calculate D matrix, its determinant and the #
     # 3N-6-2 nontorsional frequencies for each CP #
     #---------------------------------------------#
-    print "     Analyzing stationary point structures"
+    print("     Analyzing stationary point structures")
 
     # Get 'statpoint' string for tables
     ml = max([len(cpname) for cpname in list_CPs])
@@ -2188,11 +2185,11 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
     ref_e2dt = [ref_e2dt[0]-ER2 , ref_e2dt[1]-ER2 , ref_e2dt[2] , ref_e2dt[3]]
 
     # Print data
-    print "        - Energy of PES global minimum: %.7f hartree"%ER2
-    print "        - Summary table (energies in %s):"%SU1
-    print "            -%s----------------------------------------------------------------"%("-"*ml)
-    print "             %s |  type   |  Erel   |   ZPE   |  ntZPE  ||    V1    |    V2    "%spstring
-    print "            -%s----------------------------------------------------------------"%("-"*ml)
+    print("        - Energy of PES global minimum: %.7f hartree"%ER2)
+    print("        - Summary table (energies in %s):"%SU1)
+    print("            -%s----------------------------------------------------------------"%("-"*ml))
+    print("             %s |  type   |  Erel   |   ZPE   |  ntZPE  ||    V1    |    V2    "%spstring)
+    print("            -%s----------------------------------------------------------------"%("-"*ml))
     for cpname,cptype,PES,ZPE,ntZPE,V1,V2 in data4tables:
         PES   = HU1 * (PES-ER2)
         ZPE   = HU1 * ZPE
@@ -2202,25 +2199,25 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
         if cptype == 0: dataline = (cpname,"minimum",PES,ZPE,ntZPE,V1,V2)
         if cptype == 1: dataline = (cpname,"saddle ",PES,ZPE,ntZPE,V1,V2)
         if cptype == 2: dataline = (cpname,"maximum",PES,ZPE,ntZPE,V1,V2)
-        print "             %s | %s | %7.3f | %7.3f | %7.3f || %8.3f | %8.3f"%dataline
-    print "            -%s----------------------------------------------------------------"%("-"*ml)
-    print "          where:"
-    print "            Erel is the potential energy (with regard to absolute minimum)"
-    print "            ZPE is zero-point energy"
-    print "            ntZPE is the non-torsional zero-point energy"
-    print "            V1 is Erel + ZPE"
-    print "            V2 is Erel + ntZPE + 2DNS zero-point energy"
+        print("             %s | %s | %7.3f | %7.3f | %7.3f || %8.3f | %8.3f"%dataline)
+    print("            -%s----------------------------------------------------------------"%("-"*ml))
+    print("          where:")
+    print("            Erel is the potential energy (with regard to absolute minimum)")
+    print("            ZPE is zero-point energy")
+    print("            ntZPE is the non-torsional zero-point energy")
+    print("            V1 is Erel + ZPE")
+    print("            V2 is Erel + ntZPE + 2DNS zero-point energy")
 
-    print "        - Structure with min(PES): %s (%7.3f %s)"%(ref_pes[3] ,ref_pes[0] *HU1,SU1)
-    print "        - Structure with min(V1) : %s (%7.3f %s)"%(ref_msho[3],ref_msho[0]*HU1,SU1)
-    print "        - Structure with min(V2) : %s (%7.3f %s)"%(ref_e2dt[3],ref_e2dt[0]*HU1,SU1)
-    print
+    print("        - Structure with min(PES): %s (%7.3f %s)"%(ref_pes[3] ,ref_pes[0] *HU1,SU1))
+    print("        - Structure with min(V1) : %s (%7.3f %s)"%(ref_msho[3],ref_msho[0]*HU1,SU1))
+    print("        - Structure with min(V2) : %s (%7.3f %s)"%(ref_e2dt[3],ref_e2dt[0]*HU1,SU1))
+    print()
     
     #------------------------#
     # Teselation of 2D space #
     #------------------------#
-    print "     Obtaining Delaunay tesselation using CPs"
-    print 
+    print("     Obtaining Delaunay tesselation using CPs")
+    print() 
     dict_CPs     = tess.replicate_points(name,dict_CPs)
     Dlist_CPs    = sp_sorting(dict_CPs)
     Dlist_points = [dict_CPs[cp_name][0:2] for cp_name in Dlist_CPs]
@@ -2230,13 +2227,13 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
     #----------------------------#
     # |D| and |S| interpolations #
     #----------------------------#
-    print "     Interpolating det(D) and det(S)"
+    print("     Interpolating det(D) and det(S)")
     fitsqrtD = True
     fitsqrtS = True
 
     # Fourier interpolation and file exists
     if interpolation == "fourier" and os.path.isfile(f_sqrt):
-       print "        * File '%s' already exists"%f_sqrt
+       print("        * File '%s' already exists"%f_sqrt)
        # Read reference values
        file_refD = None
        file_refS = None
@@ -2249,34 +2246,34 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
        ftS, fcS, dummy = readfile_xfit(f_sqrt,"sqrtS")
        # Is sqrt(D) fitting valid?
        if (file_refD is not None) and (ftD != []):
-          diff = abs(100*(file_refD-sqrtD0)/sqrtD0)
+          diff = abs(old_div(100*(file_refD-sqrtD0),sqrtD0))
           if diff < 0.1:
-             print "          - contains information of sqrt(|D|) fitting"
+             print("          - contains information of sqrt(|D|) fitting")
              rel_sqrtD = Fourier2D(ftD)
              rel_sqrtD.set_coefs(fcD)
              fitsqrtD = False
           else:
-             print "          - reference value for sqrt(D) differs (%.4E vs %.4E)"%(file_refD,sqrtD0)
+             print("          - reference value for sqrt(D) differs (%.4E vs %.4E)"%(file_refD,sqrtD0))
        else:
-          print "          - does not contain (valid) information of sqrt(|D|) fitting"
+          print("          - does not contain (valid) information of sqrt(|D|) fitting")
        # Is sqrt(S) fitting valid?
        if (file_refS is not None) and (ftS != []):
-          diff = abs(100*(file_refS-sqrtS0)/sqrtS0)
+          diff = abs(old_div(100*(file_refS-sqrtS0),sqrtS0))
           if diff < 0.1:
-             print "          - contains information of sqrt(|S|) fitting"
+             print("          - contains information of sqrt(|S|) fitting")
              rel_sqrtS = Fourier2D(ftS)
              rel_sqrtS.set_coefs(fcS)
              fitsqrtS = False
           else:
-             print "          - reference value for sqrt(S) differs (%.4E vs %.4E)"%(file_refS,sqrtS0)
+             print("          - reference value for sqrt(S) differs (%.4E vs %.4E)"%(file_refS,sqrtS0))
        else:
-          print "          - does not contain (valid) information of sqrt(|S|) fitting"
+          print("          - does not contain (valid) information of sqrt(|S|) fitting")
 
     if interpolation != "fourier" or fitsqrtD or fitsqrtS:
-       print "        * Obtaining |D| and |S| in all PES points..."
-       print "            reference value for sqrt(|D|) is %.2E au"%sqrtD0
-       print "            reference value for sqrt(|S|) is %.2E au"%sqrtS0
-       for pes_point in dict_pes.keys():
+       print("        * Obtaining |D| and |S| in all PES points...")
+       print("            reference value for sqrt(|D|) is %.2E au"%sqrtD0)
+       print("            reference value for sqrt(|S|) is %.2E au"%sqrtS0)
+       for pes_point in list(dict_pes.keys()):
            xvec = dict_pes[pes_point][3]
            structure = Struct("",xvec,symbols,masslist,-1)
            structure.basic_setups([0,3,4])
@@ -2289,13 +2286,13 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
            detD = rI1*rI2 - l12*l12
            detS = detD * IA*IB*IC
            # Square-root of |D| and |S| (with regards to reference)
-           sqrtD = np.sqrt(detD) / sqrtD0
-           sqrtS = np.sqrt(detS) / sqrtS0
+           sqrtD = old_div(np.sqrt(detD), sqrtD0)
+           sqrtS = old_div(np.sqrt(detS), sqrtS0)
            dict_pes[pes_point] = dict_pes[pes_point] + [sqrtD,sqrtS]
        dict_pes = pessym_whole(name,dict_pes,symmetry,tsigma1,tsigma2)
 
        # Data for interpolations
-       list_pes   = dict_pes.keys()
+       list_pes   = list(dict_pes.keys())
        data_phi1  = [dict_pes[pname][ 0] for pname in list_pes]
        data_phi2  = [dict_pes[pname][ 1] for pname in list_pes]
        data_sqrtD = [dict_pes[pname][-2] for pname in list_pes]
@@ -2304,15 +2301,15 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
        if interpolation == "fourier":
           data_XY = [dict_pes[pname][0:2] for pname in list_pes]
           if fitsqrtD:
-             print "        * Fitting sqrt(|D|) to Fourier series..."
+             print("        * Fitting sqrt(|D|) to Fourier series...")
              rel_sqrtD = Fourier2D(fterms,imag=False)
              ftD, fcD, feD, ftimeD = rel_sqrtD.fit(data_XY,data_sqrtD)
           if fitsqrtS:
-             print "        * Fitting sqrt(|S|) to Fourier series..."
+             print("        * Fitting sqrt(|S|) to Fourier series...")
              rel_sqrtS = Fourier2D(fterms,imag=False)
              ftS, fcS, feS, ftimeS = rel_sqrtS.fit(data_XY,data_sqrtS)
           # Write data
-          print "        * Saving Fourier Series fittings to: %s"%f_sqrt
+          print("        * Saving Fourier Series fittings to: %s"%f_sqrt)
           filesqrt = open(f_sqrt,'w')
           filesqrt.write("ref_sqrtD %.4E\n"%sqrtD0)
           filesqrt.write("ref_sqrtS %.4E\n"%sqrtS0)
@@ -2327,19 +2324,19 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
        else:
           warnings.filterwarnings("ignore")
           kx, ky = interpolation, interpolation
-          print "        * Creating (%i,%i)-spline for sqrt(|D|)..."%(kx,ky)
+          print("        * Creating (%i,%i)-spline for sqrt(|D|)..."%(kx,ky))
           rel_sqrtD = SmoothBivariateSpline(data_phi1, data_phi2, data_sqrtD, kx=kx, ky=ky, s=0)
-          print "        * Creating (%i,%i)-spline for sqrt(|S|)..."%(kx,ky)
+          print("        * Creating (%i,%i)-spline for sqrt(|S|)..."%(kx,ky))
           rel_sqrtS = SmoothBivariateSpline(data_phi1, data_phi2, data_sqrtS, kx=kx, ky=ky, s=0)
 
-    print "        * Checking interpolation: calculated  vs interpolated values for stationary points [sqrt(|D|)], [sqrt(|S|)]"
+    print("        * Checking interpolation: calculated  vs interpolated values for stationary points [sqrt(|D|)], [sqrt(|S|)]")
     wrong = False
     MAXERROR = 2.0
     for cpname in list_CPs:
         phi1     = dict_CPs[cpname][0]
         phi2     = dict_CPs[cpname][1]
-        cp_sqrtD = dict_CPs[cpname][-5]/sqrtD0
-        cp_sqrtS = dict_CPs[cpname][-4]/sqrtS0
+        cp_sqrtD = old_div(dict_CPs[cpname][-5],sqrtD0)
+        cp_sqrtS = old_div(dict_CPs[cpname][-4],sqrtS0)
         sp_sqrtD = rel_sqrtD(phi1,phi2)
         sp_sqrtS = rel_sqrtS(phi1,phi2)
         # relative error
@@ -2349,22 +2346,22 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
         line2 = "            %s:  [%.3f vs %.3f (%3.1f%%)] , [%.3f vs %.3f (%3.1f%%)] <--"
         if diffD > MAXERROR or diffS > MAXERROR:
            wrong = True
-           print line2%(cpname,cp_sqrtD,sp_sqrtD,diffD,cp_sqrtS,sp_sqrtS,diffS)
+           print(line2%(cpname,cp_sqrtD,sp_sqrtD,diffD,cp_sqrtS,sp_sqrtS,diffS))
        #else: print line1%(cpname,cp_sqrtD,sp_sqrtD,diffD,cp_sqrtS,sp_sqrtS,diffS)
-    if wrong: print "        * WARNING!! Problems with interpolation!"
-    print
+    if wrong: print("        * WARNING!! Problems with interpolation!")
+    print()
 
     # v1.1: get max sigma rot
-    if BOOL_v1_1: rotsigma_max = max([dict_CPs[cpname][-3] for cpname in dict_CPs.keys()])
+    if BOOL_v1_1: rotsigma_max = max([dict_CPs[cpname][-3] for cpname in list(dict_CPs.keys())])
 
     #---------------------------------------#
     # Calculate (tilde) partition functions #
     #---------------------------------------#
 
-    print "    ****************************************"
-    print "     CALCULATION OF THE PARTITION FUNCTIONS "
-    print "    ****************************************"
-    print
+    print("    ****************************************")
+    print("     CALCULATION OF THE PARTITION FUNCTIONS ")
+    print("    ****************************************")
+    print()
    #print "    IMPORTANT: the partition functions are listed as:"
    #print "               (a) The reference energy is set to the lowest"
    #print "                   allowed energy (ZPE-exclusive)"
@@ -2392,14 +2389,14 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
         #-----------------------------------------------#
         # Volume at 1E5 Pa = 1 bar; i.e. standard state #
         #-----------------------------------------------#
-        p0      = 1E5 * (cons.meter**3 / cons.joule)
-        volume  = cons.kB * T / p0 # volume of a single molecule
+        p0      = 1E5 * (old_div(cons.meter**3, cons.joule))
+        volume  = old_div(cons.kB * T, p0) # volume of a single molecule
 
         #-------------------------------#
         # Calculate Q_1W-HO and Q_MS-HO #
         #-------------------------------#
         ptfn_MSHO   = 0.0 # rovibrational partition function (MSHO)
-        for cpname,structure in min_structs.items():
+        for cpname,structure in list(min_structs.items()):
             # Partition functions
             phi_tra, qrot, qvib, qele, E00 = structure.get_pfns(T,k="cc")
             # Save translational and electronic 
@@ -2416,18 +2413,18 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
             dj  = (E00-ER2) - ref_msho[0]
             exp = np.exp(-dj*beta)
             ptfn_MSHO += ptfn_1WHO_j * exp
-        ptfn_MSHO = ptfn_MSHO / sigma_tor
+        ptfn_MSHO = old_div(ptfn_MSHO, sigma_tor)
 
         #----------------------#
         # calculate Q_tor^2DNS #
         #----------------------#
-        ptfn_2DNS = + sum([np.exp(-(E-zpe_2DNS)*beta) for E in evalues]) / sigma_tor
+        ptfn_2DNS = old_div(+ sum([np.exp(-(E-zpe_2DNS)*beta) for E in evalues]), sigma_tor)
 
         #------------------------#
         # Calculate Q_cl,tor^(C) #
         #------------------------#
         args       = [T,Fourier_PES,rel_sqrtD,sqrtD0]
-        pf_torClas = + (A1/beta) * integration2D(intgrnd_ClasTor_pf,args=args,dphi=DPHI)
+        pf_torClas = + (old_div(A1,beta)) * integration2D(intgrnd_ClasTor_pf,args=args,dphi=DPHI)
 
         #-----------------#
         # Calculate Q^EHR #
@@ -2468,10 +2465,10 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
         pfELE.append(ptfn_ele)
         pfTorClas.append(float(pf_torClas))
         expZPE = np.exp(-beta*zpe_2DNS)
-        ratio2DNS.append(float(expZPE*ptfn_2DNS/pf_torClas))
+        ratio2DNS.append(float(old_div(expZPE*ptfn_2DNS,pf_torClas)))
 
         t2 = time.time()
-        print "        * T = %7.2f K done! (%.1f seconds)"%(T,t2-t1)
+        print("        * T = %7.2f K done! (%.1f seconds)"%(T,t2-t1))
 
     #------------------------------------#
     # Correct ratio in case it decreases #
@@ -2494,11 +2491,11 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
         Fq2DNS      = ratio2DNS[idx]
         if Fq2DNS  == "unit": Fq2DNS = 1.0
         pfn_EHR     = pfEHR[idx]
-        pfn_2DNS    = Fq2DNS*pfn_TorClas/expZPE
+        pfn_2DNS    = old_div(Fq2DNS*pfn_TorClas,expZPE)
         # Correct 2DNS
         pf2DNS[idx] = pfn_2DNS
         # Get E2DT
-        pfn_E2DT = (pfn_2DNS/pfn_TorClas)*pfn_EHR
+        pfn_E2DT = (old_div(pfn_2DNS,pfn_TorClas))*pfn_EHR
         pfE2DT.append(pfn_E2DT)
 
     #--------#
@@ -2509,23 +2506,23 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
     Eref_E2DT = ref_e2dt[0]
     tuple_Eref = (Eref_1WHO,Eref_MSHO,zpe_2DNS,Eref_E2DT-zpe_2DNS,Eref_E2DT)
     tables     = string_pfntable(Tlist,pf1WHO,pfMSHO,pfE2DT,pf2DNS,pfTorClas,pfEHR,ratio2DNS,tuple_Eref,pfTRA,pfELE)
-    print
-    for line in  tables.split("\n")[4:-2]: print line
+    print()
+    for line in  tables.split("\n")[4:-2]: print(line)
     output = open(f_tables,'w')
     output.write(tables)
     output.close()
-    print "     Tables were stored at '%s' file"%(f_tables)
-    print
+    print("     Tables were stored at '%s' file"%(f_tables))
+    print()
 
     if thermo is False: return
 
     #----------------#
     # Thermodynamics #
     #----------------#
-    print "    ********************************************"
-    print "     CALCULATION OF THE THERMODYNAMIC FUNCTIONS "
-    print "    ********************************************"
-    print
+    print("    ********************************************")
+    print("     CALCULATION OF THE THERMODYNAMIC FUNCTIONS ")
+    print("    ********************************************")
+    print()
     ther1WHO, therMSHO, therE2DT = [], [], []
     for idx in range(len(Tlist)):
         t1   = time.time()
@@ -2550,7 +2547,7 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
         sdln_MSHO   = 0.0 # (d^2lnQ/dbeta^2) for rovibration (MSHO)
         fd_MSHO     = 0.0 # (dQ/dbeta)       for rovibration (MSHO)
         sd_MSHO     = 0.0 # (d^2Q/dbeta^2)   for rovibration (MSHO)
-        for cpname,structure in min_structs.items():
+        for cpname,structure in list(min_structs.items()):
             # Partition functions
             phi_tra, qrot, qvib, qele, E00 = structure.get_pfns(T,k="cc")
             # Derivatives
@@ -2606,8 +2603,8 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
            fd_MSHO   /= rotsigma_max
            sd_MSHO   /= rotsigma_max
         # MSHO rovibrational
-        fdln_MSHO = fd_MSHO/ptfn_MSHO
-        sdln_MSHO = sd_MSHO/ptfn_MSHO - (fd_MSHO/ptfn_MSHO)**2
+        fdln_MSHO = old_div(fd_MSHO,ptfn_MSHO)
+        sdln_MSHO = old_div(sd_MSHO,ptfn_MSHO) - (old_div(fd_MSHO,ptfn_MSHO))**2
 
         #----------------------------#
         # 2DNS, TorClas and Fq(2DNS) #
@@ -2617,17 +2614,17 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
            sdln_Fq2DNS = 0.0
         else:
            args         = [T,Fourier_PES,rel_sqrtD,sqrtD0]
-           fd_torClas   = - (A1/beta) * integration2D(intgrnd_ClasTor_fd,args=args,dphi=DPHI)
-           sd_torClas   = + (A1/beta) * integration2D(intgrnd_ClasTor_sd,args=args,dphi=DPHI)
+           fd_torClas   = - (old_div(A1,beta)) * integration2D(intgrnd_ClasTor_fd,args=args,dphi=DPHI)
+           sd_torClas   = + (old_div(A1,beta)) * integration2D(intgrnd_ClasTor_sd,args=args,dphi=DPHI)
            # get derivative of log
-           fdln_torClas = fd_torClas / ptfn_torClas
-           sdln_torClas = sd_torClas / ptfn_torClas - (fd_torClas / ptfn_torClas)**2
+           fdln_torClas = old_div(fd_torClas, ptfn_torClas)
+           sdln_torClas = old_div(sd_torClas, ptfn_torClas) - (old_div(fd_torClas, ptfn_torClas))**2
 
-           fd_2DNS   = - sum([  (E-zpe_2DNS)    *np.exp(-(E-zpe_2DNS)*beta) for E in evalues]) / sigma_tor
-           sd_2DNS   = + sum([ ((E-zpe_2DNS)**2)*np.exp(-(E-zpe_2DNS)*beta) for E in evalues]) / sigma_tor
+           fd_2DNS   = old_div(- sum([  (E-zpe_2DNS)    *np.exp(-(E-zpe_2DNS)*beta) for E in evalues]), sigma_tor)
+           sd_2DNS   = old_div(+ sum([ ((E-zpe_2DNS)**2)*np.exp(-(E-zpe_2DNS)*beta) for E in evalues]), sigma_tor)
            # get derivative of log
-           fdln_2DNS = fd_2DNS/ptfn_2DNS   
-           sdln_2DNS = sd_2DNS/ptfn_2DNS - (fd_2DNS/ptfn_2DNS)**2
+           fdln_2DNS = old_div(fd_2DNS,ptfn_2DNS)   
+           sdln_2DNS = old_div(sd_2DNS,ptfn_2DNS) - (old_div(fd_2DNS,ptfn_2DNS))**2
 
            fdln_Fq2DNS = fdln_2DNS - fdln_torClas - zpe_2DNS
            sdln_Fq2DNS = sdln_2DNS - sdln_torClas
@@ -2662,8 +2659,8 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
            fd_EHR /= rotsigma_max
            sd_EHR /= rotsigma_max
         # get derivative of log
-        fdln_EHR = fd_EHR / rv_EHR    
-        sdln_EHR = sd_EHR / rv_EHR - (fd_EHR / rv_EHR)**2
+        fdln_EHR = old_div(fd_EHR, rv_EHR)    
+        sdln_EHR = old_div(sd_EHR, rv_EHR) - (old_div(fd_EHR, rv_EHR))**2
 
         #------#
         # E2DT #
@@ -2679,7 +2676,7 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
         H_1WHO   = -fdln_trP - fdln_1WHO - fdln_ele
         cp_1WHO  = cons.kB * beta * beta * ( sdln_trP + sdln_1WHO + sdln_ele )
         S_1WHO   = cons.kB * log_1WHO - cons.kB * beta * (fdln_trP + fdln_1WHO + fdln_ele)
-        G_1WHO   =  - log_1WHO / beta
+        G_1WHO   =  old_div(- log_1WHO, beta)
         ther1WHO.append( (U_1WHO,H_1WHO,cp_1WHO,S_1WHO,G_1WHO) )
 
         log_MSHO = np.log(ptfn_tr) + np.log(ptfn_MSHO) + np.log(ptfn_ele)
@@ -2687,7 +2684,7 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
         H_MSHO   = -fdln_trP - fdln_MSHO - fdln_ele
         cp_MSHO  = cons.kB * beta * beta * ( sdln_trP + sdln_MSHO + sdln_ele )
         S_MSHO   = cons.kB * log_MSHO - cons.kB * beta * (fdln_trP + fdln_MSHO + fdln_ele)
-        G_MSHO   =  - log_MSHO / beta
+        G_MSHO   =  old_div(- log_MSHO, beta)
         therMSHO.append( (U_MSHO,H_MSHO,cp_MSHO,S_MSHO,G_MSHO) )
 
         log_E2DT = np.log(ptfn_tr) + np.log(ptfn_E2DT) + np.log(ptfn_ele)
@@ -2695,23 +2692,23 @@ def q2dtor_rovibpf(name,inpdata,files2read,files2write,Tlist,thermo=False):
         H_E2DT   = -fdln_trP - fdln_E2DT - fdln_ele
         cp_E2DT  = cons.kB * beta * beta * ( sdln_trP + sdln_E2DT + sdln_ele )
         S_E2DT   = cons.kB * log_E2DT - cons.kB * beta * (fdln_trP + fdln_E2DT + fdln_ele)
-        G_E2DT   =  - log_E2DT / beta
+        G_E2DT   =  old_div(- log_E2DT, beta)
         therE2DT.append( (U_E2DT,H_E2DT,cp_E2DT,S_E2DT,G_E2DT) )
 
         t2 = time.time()
-        print "        * T = %7.2f K done! (%.2f seconds)"%(T,t2-t1)
+        print("        * T = %7.2f K done! (%.2f seconds)"%(T,t2-t1))
 
     #--------#
     # Tables #
     #--------#
     tables = string_thermotable(Tlist,ther1WHO, therMSHO, therE2DT)
-    print
-    for line in  tables.split("\n")[4:-2]: print line
+    print()
+    for line in  tables.split("\n")[4:-2]: print(line)
     output = open(f_tables,'a')
     output.write(tables)
     output.close()
-    print "     Tables were stored at '%s' file"%(f_tables)
-    print
+    print("     Tables were stored at '%s' file"%(f_tables))
+    print()
 #----------------------------------------------------------#
 #----------------------------------------------------------#
 
@@ -2731,8 +2728,8 @@ def tools(name,avail_args):
     #----------------------#
     # Any tool to be used? #
     #----------------------#
-    if '--pdf' in avail_args.keys():
-       print TOOLMESS%"--pdf"
+    if '--pdf' in list(avail_args.keys()):
+       print(TOOLMESS%"--pdf")
        if name is None: sys.exit("     Main name needed")
        if name.endswith(".inp"): ifile = name; name  = name[:-4]
        else: ifile = name + ".inp"
@@ -2740,14 +2737,14 @@ def tools(name,avail_args):
        tool_pdf(name,ifile)
        return True
 
-    if "--gts" in avail_args.keys():
-       print TOOLMESS%"--gts"
+    if "--gts" in list(avail_args.keys()):
+       print(TOOLMESS%"--gts")
        software = avail_args["--gts"]
        tool_gts(name,software)
        return True
 
-    if '--icoords' in avail_args.keys():
-       print TOOLMESS%"--icoords"
+    if '--icoords' in list(avail_args.keys()):
+       print(TOOLMESS%"--icoords")
        mode, ics = avail_args["--icoords"]
        tool_icoords(name,mode,ics)
        return True
@@ -2778,7 +2775,7 @@ def tool_pdf(name,ifile):
                dcy = random.choice([-1,+1]) * random.random()
                dcz = random.choice([-1,+1]) * random.random()
                dcolor = np.array([dcx,dcy,dcz])
-               dcolor = dcolor / np.linalg.norm(dcolor)
+               dcolor = old_div(dcolor, np.linalg.norm(dcolor))
                # amount in variation
                magnitude = random.choice([0.25,0.50,0.75])
                # new color
@@ -2864,9 +2861,9 @@ def tool_pdf(name,ifile):
     # Read PES
     if os.path.exists(f_pes):
        dict_pes, symbols, Eref = readfile_pes(f_pes)
-       pes_calc = dict_pes.keys()
+       pes_calc = list(dict_pes.keys())
        dict_pes = pessym_whole(name,dict_pes,symmetry,tsigma1,tsigma2)
-       pes_all  = dict_pes.keys()
+       pes_all  = list(dict_pes.keys())
        plots[0] = True
        plots[1] = True
        plots[2] = True
@@ -2888,8 +2885,8 @@ def tool_pdf(name,ifile):
     # Critical points: replication #
     #------------------------------#
     # Set color for the region of each CP
-    colors = sp_colors(dict_CPs.keys())
-    for cp in colors.keys(): dict_CPs[cp] = dict_CPs[cp] + [colors[cp]]
+    colors = sp_colors(list(dict_CPs.keys()))
+    for cp in list(colors.keys()): dict_CPs[cp] = dict_CPs[cp] + [colors[cp]]
     # Symmetry replication
     dict_CPs, list_CPs, initial_CPs = sp_allCPs(dict_CPs,symmetry,name,tsigma1,tsigma2)
     # Delaunay tesselation
@@ -2903,7 +2900,7 @@ def tool_pdf(name,ifile):
     #-----------------#
     # Create pdf file #
     #-----------------#
-    print "     Storing plots in file: %s"%f_pdf
+    print("     Storing plots in file: %s"%f_pdf)
     pp       = PdfPages(f_pdf)
 
     if plots[0]:
@@ -3041,7 +3038,7 @@ def tool_pdf(name,ifile):
        if plotmode == 2:
            pylab.triplot(points[:,0]*cons.R2D, points[:,1]*cons.R2D, delaunay.simplices.copy(),'-k',lw=1.5,zorder=2)
        # all stationary points (including those generated for Delaunay)
-       for cp_name in dict_CPs.keys():
+       for cp_name in list(dict_CPs.keys()):
            phi1   = dict_CPs[cp_name][0]*cons.R2D
            phi2   = dict_CPs[cp_name][1]*cons.R2D
            cptype = dict_CPs[cp_name][2]
@@ -3085,7 +3082,7 @@ def tool_pdf(name,ifile):
                color  = dict_CPs[cpname][-1]
                pylab.plot( [phi1*cons.R2D],[phi2*cons.R2D],'o',color=color,mec=color,alpha=1.00,zorder=1)
        # all stationary points (including those generated for Delaunay)
-       for cp_name in dict_CPs.keys():
+       for cp_name in list(dict_CPs.keys()):
            phi1   = dict_CPs[cp_name][0]*cons.R2D
            phi2   = dict_CPs[cp_name][1]*cons.R2D
            cptype = dict_CPs[cp_name][2]
@@ -3104,23 +3101,23 @@ def tool_pdf(name,ifile):
 
     pylab.close("all")
     pp.close()
-    print
+    print()
 #----------------------------------------------------------#
 def tool_gts(mainname,software):
     '''
     Function to create a gts file from files coming from other sofware
     '''
     software = software.lower()
-    print "     Software: '%s'"%software
+    print("     Software: '%s'"%software)
 
     #---------#
     if   software == "gaussian":
          ff = [mainname+"."+ext for ext in ["fchk"]]
-         print "     Looking for files:"
+         print("     Looking for files:")
          found = []
          for f in ff:
-             if os.path.isfile(f):  print "         %s  (yes)"%f; found.append(True )
-             else                :  print "         %s  (no)"%f ; found.append(False)
+             if os.path.isfile(f):  print("         %s  (yes)"%f); found.append(True )
+             else                :  print("         %s  (no)"%f) ; found.append(False)
          # Read fchk file
          if found[0]:
             from mq2dtor.mesc_gaussian import readfchk
@@ -3130,17 +3127,17 @@ def tool_gts(mainname,software):
     #---------#
     elif software == "orca":
          ff = [mainname+"."+ext for ext in ["out","engrad","hess"]]
-         print "     Looking for files:"
+         print("     Looking for files:")
          found = []
          for f in ff:
-             if os.path.isfile(f):  print "         (yes) %s"%f; found.append(True )
-             else                :  print "         (no)  %s"%f ; found.append(False)
+             if os.path.isfile(f):  print("         (yes) %s"%f); found.append(True )
+             else                :  print("         (no)  %s"%f) ; found.append(False)
          # Read output
          if found[0]:
             from mq2dtor.mesc_orca import read_output
             xcc, symbols, atonums, ch, mtp, E = read_output(ff[0])
          else:
-            print
+            print()
             sys.exit("     Problems reading file: %s\n"%ff[0])
          # Read engrad file
          if found[1]:
@@ -3159,10 +3156,10 @@ def tool_gts(mainname,software):
     #---------#
 
     masslist = [cons.dict_atomasses[atonum] for atonum in atonums]
-    print "     Calculatin point group:"
+    print("     Calculatin point group:")
     pgroup, rotsigma = hf.get_pgs(atonums,masslist,xcc)
-    print "        * %s"%pgroup
-    print "     Creating file: %s"%(mainname+".gts")
+    print("        * %s"%pgroup)
+    print("     Creating file: %s"%(mainname+".gts"))
     write_gtsfile(xcc , atonums , ch, mtp, E, pgroup, rotsigma , gcc , Fcc, mainname+".gts")
     # Write molden
     structure = gts2Struct(mainname+".gts")
@@ -3170,8 +3167,8 @@ def tool_gts(mainname,software):
        structure.basic_setups([0,3])
        structure.calc_ccfreqs()
        structure.write_molden(mainname+".molden")
-       print "     Creating file: %s"%(mainname+".molden")
-    print
+       print("     Creating file: %s"%(mainname+".molden"))
+    print()
 #----------------------------------------------------------#
 def tool_icoords(name,mode,f_ics):
     #-------------------------------------------------------------
@@ -3180,27 +3177,27 @@ def tool_icoords(name,mode,f_ics):
         if not os.path.isfile(f_gts): sys.exit("  Unable to find file: %s\n"%f_gts)
         if not os.path.isfile(f_ics): sys.exit("  Unable to find file: %s\n"%f_ics)
         # read files
-        print "  Reading file: %s"%f_gts
+        print("  Reading file: %s"%f_gts)
         struct = gts2Struct(f_gts,"")
         nvib = struct.get("nvib")
-        print "    - number of atoms: %i"%(struct.get("natoms"))
-        print "    - vibrational dof: %i"%nvib
-        print "  Reading file: %s"%f_ics
+        print("    - number of atoms: %i"%(struct.get("natoms")))
+        print("    - vibrational dof: %i"%nvib)
+        print("  Reading file: %s"%f_ics)
         icoords, nics, bonds = readfile_ics(f_ics)
-        print "    - number of ics  : %i"%nics
+        print("    - number of ics  : %i"%nics)
         # Calculate cc-frequencies
-        print "  Calculating cc-frequencies"
+        print("  Calculating cc-frequencies")
         if struct.get("Fcc") is None: sys.exit("  Unable to find hessian matrix")
         struct.basic_setups([0,3])
         struct.calc_ccfreqs()
-        for freq in struct.get("ccfreqs"): print "    %s cm^-1"%str(freq)
+        for freq in struct.get("ccfreqs"): print("    %s cm^-1"%str(freq))
         # Calculate ic-frequencies
-        print "  Calculating ic-frequencies"
+        print("  Calculating ic-frequencies")
         same_values = struct.check_icoords(icoords)
-        for freq in struct.get("icfreqs"): print "    %s cm^-1"%str(freq)
+        for freq in struct.get("icfreqs"): print("    %s cm^-1"%str(freq))
         
-        if same_values: print "  The set of internal coordinates is: VALID"
-        else          : print "  The set of internal coordinates is: NOT VALID"
+        if same_values: print("  The set of internal coordinates is: VALID")
+        else          : print("  The set of internal coordinates is: NOT VALID")
 
         return struct, icoords, nvib, nics, same_values
     #-------------------------------------------------------------
@@ -3209,14 +3206,14 @@ def tool_icoords(name,mode,f_ics):
        if f_ics is None: sys.exit("  ERROR: define the file with internal coordinates!\n")
        f_gts = name+".gts"
        struct, icoords, nvib, nics, valid = gtsicoords(f_gts,f_ics)
-       print
+       print()
        if valid and nics > nvib:
-         print "  Trying to debug internal coordinates"
+         print("  Trying to debug internal coordinates")
          icoords, nics = struct.purify_ricoords(icoords,show=True,rbonds=True)
-         print "  This set (%i) would be also valid:"%nics
+         print("  This set (%i) would be also valid:"%nics)
          for ictype, ic in icoords:
-             if ictype == "3": print "       "+"=".join([str(ii+1) for ii in ic])
-             else            : print "       "+"-".join([str(ii+1) for ii in ic])
+             if ictype == "3": print("       "+"=".join([str(ii+1) for ii in ic]))
+             else            : print("       "+"-".join([str(ii+1) for ii in ic]))
 
     elif mode == "sp":
        iofiles   = readfile_inp(name+".inp")[8]
@@ -3224,14 +3221,14 @@ def tool_icoords(name,mode,f_ics):
        if f_ics is None: f_ics = DIRFILES + iofiles[2]
        # read splist
        dict_CPs, Eref_cp = readfile_splist(f_splist)
-       for sp in dict_CPs.keys():
-           print " ----------------------------------" + "-"*len(sp)
-           print "  Testing internal coordinates in: %s"%sp
-           print " ----------------------------------" + "-"*len(sp)
+       for sp in list(dict_CPs.keys()):
+           print(" ----------------------------------" + "-"*len(sp))
+           print("  Testing internal coordinates in: %s"%sp)
+           print(" ----------------------------------" + "-"*len(sp))
            f_gts = DIRSP + sp + ".gts"
            gtsicoords(f_gts, f_ics)
-           print " ----------------------------------" + "-"*len(sp)
-           print
+           print(" ----------------------------------" + "-"*len(sp))
+           print()
 #----------------------------------------------------------#
 #----------------------------------------------------------#
 
@@ -3255,8 +3252,8 @@ def pessym_inregion(phi1, phi2, symmetry="", tsigma1=1, tsigma2=1):
        mphi1 = cons.TWOPI
        mphi2 = cons.TWOPI
     if "c"     in symmetry:
-       mphi1 = cons.TWOPI/tsigma1
-       mphi2 = cons.TWOPI/tsigma2
+       mphi1 = old_div(cons.TWOPI,tsigma1)
+       mphi2 = old_div(cons.TWOPI,tsigma2)
     m12 = float(tsigma1)/float(tsigma2)
 
     # Check 2pi and (c) conditions
@@ -3357,8 +3354,8 @@ def pessym_apply(phi1, phi2, symmetry="", tsigma1=1, tsigma2=1):
 def pessym_points(dphi1,dphi2,symmetry="",tsigma1=1,tsigma2=1):
 
     if "c" in symmetry:
-       mphi1 = cons.TWOPI/tsigma1
-       mphi2 = cons.TWOPI/tsigma2
+       mphi1 = old_div(cons.TWOPI,tsigma1)
+       mphi2 = old_div(cons.TWOPI,tsigma2)
     else:
        mphi1 = cons.TWOPI
        mphi2 = cons.TWOPI
@@ -3385,9 +3382,9 @@ def pessym_whole(name,dict_pes,symmetry,tsigma1,tsigma2,pprint=False):
 
     dict_whole = {}
 
-    np1 = len(dict_pes.keys())
+    np1 = len(list(dict_pes.keys()))
     # Replicate point due to PES symmetry
-    for pname1 in dict_pes.keys():
+    for pname1 in list(dict_pes.keys()):
         phi1,phi2 = dict_pes[pname1][0:2]
         toadd     = pessym_apply(phi1, phi2, symmetry, tsigma1, tsigma2)
         for p1,p2 in toadd:
@@ -3396,9 +3393,9 @@ def pessym_whole(name,dict_pes,symmetry,tsigma1,tsigma2,pprint=False):
             dict_whole[pname2] = [p1,p2]+dict_pes[pname1][2:]
         # Empty original dict
         dict_pes[pname1]   = None
-    np2 = len(dict_whole.keys())
+    np2 = len(list(dict_whole.keys()))
     # Replicate point due to 2pi symmetry
-    for pname1 in dict_whole.keys():
+    for pname1 in list(dict_whole.keys()):
         phi1,phi2 = dict_whole[pname1][0:2]
         if phi1 == 0.0:
            p1, p2 = cons.TWOPI, phi2
@@ -3412,12 +3409,12 @@ def pessym_whole(name,dict_pes,symmetry,tsigma1,tsigma2,pprint=False):
            p1, p2 = cons.TWOPI, cons.TWOPI
            pname2 = string_getpname(p1,p2,name,"rad")
            dict_whole[pname2] = [p1,p2]+dict_whole[pname1][2:]
-    np3 = len(dict_whole.keys())
+    np3 = len(list(dict_whole.keys()))
 
     if pprint:
-       print "        * PES contains %4i points (calculated ones)"%np1
-       print "        * PES contains %4i points after applying symmetry conditions"%np2
-       print "        * PES contains %4i points after applying 2pi-periodicity\n"%np3
+       print("        * PES contains %4i points (calculated ones)"%np1)
+       print("        * PES contains %4i points after applying symmetry conditions"%np2)
+       print("        * PES contains %4i points after applying 2pi-periodicity\n"%np3)
 
     return dict_whole
 #----------------------------------------------------------#
@@ -3442,7 +3439,7 @@ def sp_optimization(cp_name,symbols,dict_CPs,dict_pes,functionOPT,ilines):
        # Select closest geometry from scan calculations
        target    = None
        min_norm2 = +float("inf")
-       for pes_point in dict_pes.keys():
+       for pes_point in list(dict_pes.keys()):
            ref_phi1, ref_phi2 = [float(angle)*cons.D2R for angle in pes_point.split("_")[-2:]]
            dphi1 = hf.angle_diff(phi1,ref_phi1)
            dphi2 = hf.angle_diff(phi2,ref_phi2)
@@ -3467,7 +3464,7 @@ def sp_optimization(cp_name,symbols,dict_CPs,dict_pes,functionOPT,ilines):
        masslist = [cons.dict_atomasses[atonum] for atonum in atonums]
        pgroup, rotsigma = hf.get_pgs(atonums,masslist,xcc)
        gts_tuple = (xcc, atonums, ch, mtp, Etot, pgroup, rotsigma, gcc,Fcc,gtsfile)
-       print "        * Creating file '%s' with SP information"%(gtsfile)
+       print("        * Creating file '%s' with SP information"%(gtsfile))
        write_gtsfile(*gts_tuple)
 
     except: pass
@@ -3503,13 +3500,13 @@ def sp_checking(gtsfile,cp_name,cptype,torsion1,torsion2,tolerance,dict_warns,sy
 
     # Generating molden file with freqs
     molden  = DIRSP+cp_name+".molden"
-    print "        * Creating Molden file: '%s'"%(molden)
+    print("        * Creating Molden file: '%s'"%(molden))
     structure.write_molden(molden)
 
     return structure.get("Etot"), dict_warns
 #----------------------------------------------------------#
 def sp_sorting(dict_CPs):
-    E_names = [ (dict_CPs[cpname][3],cpname) for cpname in dict_CPs.keys()]
+    E_names = [ (dict_CPs[cpname][3],cpname) for cpname in list(dict_CPs.keys())]
     E_names.sort()
     list_CPs = [cpname for E,cpname in E_names]
     return list_CPs
@@ -3523,12 +3520,12 @@ def sp_icdepuration(dict_CPs,torsion1,torsion2,xyzStruct,f_ics):
     #-----------------------------------------------#
     list_CPs = [cpname for cpname in list_CPs if os.path.exists(dict_CPs[cpname][4])]
     if len(list_CPs) == 0:
-        print "     ERROR: Not a single gts file... Cannot continue...\n"; sys.exit(EXITMESS)
+        print("     ERROR: Not a single gts file... Cannot continue...\n"); sys.exit(EXITMESS)
 
     #-----------------------#
     # Is there an ics file? #
     #-----------------------#
-    print "     Generation of non-redundant internal coordinates"
+    print("     Generation of non-redundant internal coordinates")
     if not os.path.isfile(f_ics):
        # Generate ricoords
        xyzStruct.graph_autoconnect(lengthfactor=1.3)
@@ -3536,18 +3533,18 @@ def sp_icdepuration(dict_CPs,torsion1,torsion2,xyzStruct,f_ics):
        bonds = xyzStruct.graph_getbonds()
        icoords, nics = xyzStruct.gen_ricoords(torsions=[torsion1,torsion2],check=False)
        # Write ricoords
-       print "        - Internal coordinates generated and stored at '%s' "%f_ics
+       print("        - Internal coordinates generated and stored at '%s' "%f_ics)
        writefile_ics(icoords,f_ics,bonds)
     else:
-       print "        - File '%s' already exists"%f_ics
+       print("        - File '%s' already exists"%f_ics)
        icoords, nics, bonds = readfile_ics(f_ics)
-       print "          number of internal coordinates: %i"%(nics)
+       print("          number of internal coordinates: %i"%(nics))
     # Copy original
     f_ics_original = str(f_ics)+"_original"
     if not os.path.exists(f_ics_original):
-       print "        - Creating copy of original set: %s"%f_ics_original
+       print("        - Creating copy of original set: %s"%f_ics_original)
        shutil.copyfile(f_ics, f_ics_original)
-    print
+    print()
 
     #------------------------------------#
     # Check that torsions are in icoords #
@@ -3571,13 +3568,13 @@ def sp_icdepuration(dict_CPs,torsion1,torsion2,xyzStruct,f_ics):
       #---------------------------------------#
       if targets != []:
          # Select an stationary point
-         idx     = random.choice( range(len(targets)) )
+         idx     = random.choice( list(range(len(targets))) )
          cpname  = targets.pop(idx)
          cptype  = dict_CPs[cpname][2]
          gtsfile = dict_CPs[cpname][4]
 
          # Depure icoords
-         print "        - Depurating using '%s' critical point... "%cpname
+         print("        - Depurating using '%s' critical point... "%cpname)
          struct = gts2Struct(gtsfile,cpname,masslist,stype=cptype)
          if struct.get("Etot") < EMIN: EMIN = struct.get("Etot")
          struct.basic_setups([0,3])
@@ -3585,13 +3582,13 @@ def sp_icdepuration(dict_CPs,torsion1,torsion2,xyzStruct,f_ics):
          icoords, nics = struct.purify_ricoords(icoords,torsions=torsions,show=True)
       else:
          cpname = None
-         print "        - Skipping step: number of icoords = number of vib d.o.f."
-      print
+         print("        - Skipping step: number of icoords = number of vib d.o.f.")
+      print()
 
       #------------------------------#
       # Check in the rest of systems #
       #------------------------------#
-      print "        - Checking set of non-redundant internal coordinates"
+      print("        - Checking set of non-redundant internal coordinates")
       num0, num1, num2 = 1, 1, 1
       for cpname2 in list_CPs:
           if cpname2 == cpname: continue
@@ -3609,11 +3606,11 @@ def sp_icdepuration(dict_CPs,torsion1,torsion2,xyzStruct,f_ics):
           if cptype2 == 1: xxx = "TS_%02i"%num1; num1 += 1
           if cptype2 == 2: xxx = "MAX%02i"%num2; num2 += 1
           if not depured:
-             print "             * %s --> %s --> fails!"%(xxx,cpname2)
+             print("             * %s --> %s --> fails!"%(xxx,cpname2))
              break
           else:
-             print "             * %s --> %s --> OK"%(xxx,cpname2)
-      print 
+             print("             * %s --> %s --> OK"%(xxx,cpname2))
+      print() 
 
       # Finished?
       if len(targets) == 0: break
@@ -3624,30 +3621,30 @@ def sp_icdepuration(dict_CPs,torsion1,torsion2,xyzStruct,f_ics):
     # Success?? #
     #-----------#
     if not depured:
-      print "        - Failure!!"
-      print "          Removing file '%s'"%f_ics
+      print("        - Failure!!")
+      print("          Removing file '%s'"%f_ics)
       os.remove(f_ics)
-      print
+      print()
       sys.exit(EXITMESS)
 
-    print "        - Success!!"
-    print
-    print "        - Storing non-redundant set at: '%s'"%f_ics
+    print("        - Success!!")
+    print()
+    print("        - Storing non-redundant set at: '%s'"%f_ics)
     writefile_ics(icoords,f_ics,bonds)
-    print
+    print()
     return icoords
 #----------------------------------------------------------#
 def sp_allCPs(dict_CPs,symmetry,name,tsigma1,tsigma2):
 
     MAX_dE   = 1.0 # in cm^-1
     MAX_dist = 2.5 # in degrees
-    initial = dict_CPs.keys()
+    initial = list(dict_CPs.keys())
 
     #---------------------------------#
     # Check redundancy in initial set #
     #---------------------------------#
     initial = []
-    for cpname in dict_CPs.keys():
+    for cpname in list(dict_CPs.keys()):
         phi1, phi2, cptype, E = dict_CPs[cpname][0:4]
         keep = True
         for basic in initial:
@@ -3685,8 +3682,8 @@ def sp_allCPs(dict_CPs,symmetry,name,tsigma1,tsigma2):
     # Check again #
     #-------------#
     close = set([])
-    for cpnameA in dict_CPs.keys():
-        for cpnameB in dict_CPs.keys():
+    for cpnameA in list(dict_CPs.keys()):
+        for cpnameB in list(dict_CPs.keys()):
             if cpnameA == cpnameB: continue
             Aphi1, Aphi2, Acptype, AE = dict_CPs[cpnameA][0:4]
             Bphi1, Bphi2, Bcptype, BE = dict_CPs[cpnameB][0:4]
@@ -3721,9 +3718,9 @@ def sp_analysis(gtsfile,icoords,cptype,freqscal=1.0,masslist=None,name=""):
     rI2 =  Dmatrix[1,1]
     l12 = -Dmatrix[0,1]
     detD = rI1*rI2 - l12*l12
-    d11  = 100*(rI2/detD)
-    d22  = 100*(rI1/detD)
-    d12  = 100*(l12/detD)
+    d11  = 100*(old_div(rI2,detD))
+    d22  = 100*(old_div(rI1,detD))
+    d12  = 100*(old_div(l12,detD))
     # All vibrational freqs
     struct.calc_ccfreqs()
     ccfreqs = struct.get("ccfreqs")
@@ -3814,7 +3811,7 @@ def tor2DNS_hamiltonian(molname, V_terms, V_coefs, LkinD, dijtuple, coef_nums, k
     UMAKG=1.661E-27
     CONSTI=UMAKG*1.E-20
     CONSB=1.438833
-    hdc=cons.hbar_SI/(cons.c0_SI*100)/(cons.TWOPI)/2./100./CONSTI
+    hdc=old_div(cons.hbar_SI,(cons.c0_SI*100)/(cons.TWOPI)/2./100./CONSTI)
 
     #---------------------------------#
     # Read coefficients of K operator #
@@ -3864,13 +3861,13 @@ def tor2DNS_hamiltonian(molname, V_terms, V_coefs, LkinD, dijtuple, coef_nums, k
        # Apply constants
        rI1=CONSTI*rI1
        rI2=CONSTI*rI2
-       hd1=cons.hbar_SI/(cons.c0_SI*100)/(cons.TWOPI)/rI1/2.
-       hd2=cons.hbar_SI/(cons.c0_SI*100)/(cons.TWOPI)/rI2/2.
+       hd1=old_div(cons.hbar_SI,(cons.c0_SI*100)/(cons.TWOPI)/rI1/2.)
+       hd2=old_div(cons.hbar_SI,(cons.c0_SI*100)/(cons.TWOPI)/rI2/2.)
 
 
     nfil=nv1d**2
     nrow=nfil
-    imax=(nv1d-1)/2
+    imax=old_div((nv1d-1),2)
     istart=-imax
     tolx=1.e-20
     fil=[]
@@ -4038,7 +4035,7 @@ def tor2DNS_diagonalization(kmax,fil,col,ham2d,LkinD,file_evalues,ENERMAX=10000.
    numsig=0.
    while numsig <= ENERMAX:
       if icount == MAXCYCLE:
-         print 'Number of cycles exceeded'
+         print('Number of cycles exceeded')
          break
       end__=-1
       init_=-2
@@ -4066,14 +4063,14 @@ def tor2DNS_diagonalization(kmax,fil,col,ham2d,LkinD,file_evalues,ENERMAX=10000.
       #sigma=numsig,return_eigenvectors=False)
       res2.sort()
       list_pos=0
-      if oldeig != 0.0: print "              last eigenvalue is %8.2f cm^-1"%oldeig
+      if oldeig != 0.0: print("              last eigenvalue is %8.2f cm^-1"%oldeig)
       if icount > 0:
          for i in range(EIGMAX):
             neweig=res2[i]
             if oldeig>=neweig:
                list_pos += 1
                if i==EIGMAX-1:
-                  print '              Unable to find new eigenvalues above',oldeig
+                  print('              Unable to find new eigenvalues above',oldeig)
                   exit_calc = True #### new
                   break            #### new
                  #sys.exit()           #### old
@@ -4087,7 +4084,7 @@ def tor2DNS_diagonalization(kmax,fil,col,ham2d,LkinD,file_evalues,ENERMAX=10000.
       if exit_calc: break #### new
 
    # Write data in file
-   print "        * Storing eigenvalues in '%s'..."%file_evalues
+   print("        * Storing eigenvalues in '%s'..."%file_evalues)
    neigen=len(list_eig)
    ofile = open(file_evalues,'w')
    ofile.write("kmax   %i\n"%kmax)
@@ -4204,7 +4201,7 @@ def intgrnd_EHR_pf(phi1,phi2,T,FPES,tupleS,tupleNT,ref_Vehr):
     ntpf    = interpolated_data[1]
 
     # (d) Get integrand
-    integrand = sqrtS*np.exp(-U0*beta)*np.exp(-ntzpe*beta)*ntpf / sigmarot
+    integrand = old_div(sqrtS*np.exp(-U0*beta)*np.exp(-ntzpe*beta)*ntpf, sigmarot)
     # v1.1: ignore sigmarot (it'll be considered later)
     if BOOL_v1_1: integrand *= sigmarot
 
@@ -4235,7 +4232,7 @@ def intgrnd_EHR_fd(phi1,phi2,T,FPES,tupleS,tupleNT,ref_Vehr):
     ntfdln  = interpolated_data[2]
 
     # (d) Get integrand
-    integrand  = sqrtS*np.exp(-U0*beta)*np.exp(-ntzpe*beta)*ntpf/sigmarot
+    integrand  = old_div(sqrtS*np.exp(-U0*beta)*np.exp(-ntzpe*beta)*ntpf,sigmarot)
     integrand *= (ntfdln-2.5/beta-(U0+ntzpe))
     # v1.1: ignore sigmarot (it'll be considered later)
     if BOOL_v1_1: integrand *= sigmarot
@@ -4269,7 +4266,7 @@ def intgrnd_EHR_sd(phi1,phi2,T,FPES,tupleS,tupleNT,ref_Vehr):
 
 
     # (d) Get integrand
-    integrand  = sqrtS*np.exp(-U0*beta)*np.exp(-ntzpe*beta)*ntpf/sigmarot
+    integrand  = old_div(sqrtS*np.exp(-U0*beta)*np.exp(-ntzpe*beta)*ntpf,sigmarot)
     integrand *= (ntsdln+2.5/beta/beta+(2.5/beta+U0+ntzpe-ntfdln)**2)
     # v1.1: ignore sigmarot (it'll be considered later)
     if BOOL_v1_1: integrand *= sigmarot
@@ -4369,7 +4366,7 @@ def string_pfntable(Tlist,pf1WHO,pfMSHO,pfE2DT,pf2DNS,pfTorClas,pfEHR,ratio2DNS,
         pfn_1WHO = pf1WHO[idx]
         pfn_MSHO = pfMSHO[idx]
         pfn_E2DT = pfE2DT[idx]
-        ratio    = pfn_E2DT/pfn_MSHO
+        ratio    = old_div(pfn_E2DT,pfn_MSHO)
         line     = (T,pfn_1WHO,pfn_MSHO,pfn_E2DT,ratio)
         table1   = table1 + "           %7.2f | %10.3E | %10.3E | %10.3E |  %7.5f  \n"%line
         # Components E2DT
@@ -4382,7 +4379,7 @@ def string_pfntable(Tlist,pf1WHO,pfMSHO,pfE2DT,pf2DNS,pfTorClas,pfEHR,ratio2DNS,
         pfn_1WHO = pf1WHO[idx] * np.exp(-beta*Eref[0])
         pfn_MSHO = pfMSHO[idx] * np.exp(-beta*Eref[1])
         pfn_E2DT = pfE2DT[idx] * np.exp(-beta*Eref[4])
-        ratio    = pfn_E2DT/pfn_MSHO
+        ratio    = old_div(pfn_E2DT,pfn_MSHO)
         line     = (T,pfn_1WHO,pfn_MSHO,pfn_E2DT,ratio)
         table3 = table3 + "           %7.2f | %10.3E | %10.3E | %10.3E |  %7.5f  \n"%line
         # Components E2DT
@@ -4402,7 +4399,7 @@ def string_pfntable(Tlist,pf1WHO,pfMSHO,pfE2DT,pf2DNS,pfTorClas,pfEHR,ratio2DNS,
         pfn_1WHO = pf1WHO[idx] * np.exp(-beta*Eref[0]) * pfn_trans * pfn_elect
         pfn_MSHO = pfMSHO[idx] * np.exp(-beta*Eref[1]) * pfn_trans * pfn_elect
         pfn_E2DT = pfE2DT[idx] * np.exp(-beta*Eref[4]) * pfn_trans * pfn_elect
-        ratio    = pfn_E2DT/pfn_MSHO
+        ratio    = old_div(pfn_E2DT,pfn_MSHO)
         line     = (T,pfn_1WHO,pfn_MSHO,pfn_E2DT)
         table6 = table6 + "           %7.2f | %10.3E | %10.3E | %10.3E \n"%line
 
@@ -4528,12 +4525,12 @@ def ic_checktorsions(icoords,torsion1,torsion2):
     ics.append( ("4",torsion1) )
     ics.append( ("4",torsion2) )
     if not t1in:
-       print "     ERROR: internal coordinates do not contain torsion 1"
-       print
+       print("     ERROR: internal coordinates do not contain torsion 1")
+       print()
        sys.exit(EXITMESS)
     if not t2in:
-       print "     ERROR: internal coordinates do not contain torsion 2"
-       print
+       print("     ERROR: internal coordinates do not contain torsion 2")
+       print()
        sys.exit(EXITMESS)
     return ics
 #----------------------------------------------------------#
@@ -4547,10 +4544,10 @@ def clean_close(dict_cps,basic=[],diff_angle=4.0,diff_Ecm=10.0):
         dict_cps2[ppname] = dict_cps.pop(ppname)
 
     # Now compare the rest
-    for ppname in dict_cps.keys():
+    for ppname in list(dict_cps.keys()):
         phi1, phi2, cptype, E = dict_cps[ppname][0:4]
         keep = True
-        for rname in dict_cps2.keys():
+        for rname in list(dict_cps2.keys()):
             rp1, rp2, rt, rE = dict_cps2[rname][0:4]
             # Same point?
             diff1 = hf.angle_diff(phi1,rp1)
@@ -4585,10 +4582,10 @@ def change_Eref(old_Eref,new_Eref,f_pes,f_vfit):
     # Change reference Energy #
     #-------------------------#
     if old_Eref > new_Eref:
-       print "     Reference energy has to be updated:"
-       print "        - old reference: %+14.7f hartree"%old_Eref
-       print "        - new reference: %+14.7f hartree"%new_Eref
-       print "        - Modifying file: %s"%f_pes
+       print("     Reference energy has to be updated:")
+       print("        - old reference: %+14.7f hartree"%old_Eref)
+       print("        - new reference: %+14.7f hartree"%new_Eref)
+       print("        - Modifying file: %s"%f_pes)
        lines = []
        # Read file
        ff = open(f_pes,'r')
@@ -4601,7 +4598,7 @@ def change_Eref(old_Eref,new_Eref,f_pes,f_vfit):
        ff.write("MINENERGY         %+14.8f\n"%new_Eref)
        ff.close()
 
-       print "        - Modifying file: %s"%f_vfit
+       print("        - Modifying file: %s"%f_vfit)
        lines = []
        # Read file
        ff = open(f_vfit,'r')
@@ -4611,12 +4608,12 @@ def change_Eref(old_Eref,new_Eref,f_pes,f_vfit):
        ff.close()
        # Modify file
        ff = open(f_vfit,'w')
-       dE = (new_Eref - old_Eref) / cons.h / cons.c0 / cons.cm
+       dE = old_div((new_Eref - old_Eref), cons.h / cons.c0 / cons.cm)
        ff.write("const      %02s    %02s   %+11.4f\n"%("-","-",A0-dE))
        for line in lines:
            if not line.startswith("const"): ff.write(line)
        ff.close()
-       print
+       print()
 #----------------------------------------------------------#
 def pfn_derivatives(structure,qele,T,k="cc"):
 
@@ -4631,17 +4628,17 @@ def pfn_derivatives(structure,qele,T,k="cc"):
     # Translational #
     #---------------#
     # at constant V
-    fdln_tra_V = -1.5 / beta
-    sdln_tra_V = +1.5 / beta / beta
+    fdln_tra_V = old_div(-1.5, beta)
+    sdln_tra_V = old_div(+1.5, beta / beta)
     # at constant p
-    fdln_tra_P = -2.5 / beta
-    sdln_tra_P = +2.5 / beta / beta
+    fdln_tra_P = old_div(-2.5, beta)
+    sdln_tra_P = old_div(+2.5, beta / beta)
 
     #---------------#
     # Rotational    #
     #---------------#
-    fdln_rot = -1.5 / beta
-    sdln_rot = +1.5 / beta / beta
+    fdln_rot = old_div(-1.5, beta)
+    sdln_rot = old_div(+1.5, beta / beta)
 
     #---------------#
     # Vibrational   #
@@ -4658,8 +4655,8 @@ def pfn_derivatives(structure,qele,T,k="cc"):
     #---------------#
     fd_ele = - sum( [(relE   )*mtp*np.exp(-beta*relE) for relE,mtp in structure._elstates]  )
     sd_ele = + sum( [(relE**2)*mtp*np.exp(-beta*relE) for relE,mtp in structure._elstates]  )
-    fdln_ele = fd_ele / qele
-    sdln_ele = sd_ele / qele - (fd_ele/qele)**2
+    fdln_ele = old_div(fd_ele, qele)
+    sdln_ele = old_div(sd_ele, qele) - (old_div(fd_ele,qele))**2
 
     tuple_tra1 = (fdln_tra_V,sdln_tra_V) # at constant V
     tuple_tra2 = (fdln_tra_P,sdln_tra_P) # at constant p
@@ -4735,7 +4732,7 @@ def deal1Dfourierstring(string1D):
     indices = []
     if "-" in string1D:
        start, end = string1D.split("-")
-       indices = range(int(start),int(end)+1,1)
+       indices = list(range(int(start),int(end)+1,1))
     else:
        indices = list(set([int(ii) for ii in string1D.split()]))
     indices.sort()
@@ -4749,7 +4746,7 @@ def deal2Dfourierstring(string2D):
     if   "," in string2D: string1, string2 = string2D.split(",")
     elif ";" in string2D: string1, string2 = string2D.split(";")
     elif ":" in string2D: string1, string2 = string2D.split(":")
-    else: print " ERROR: Problems reading 2D Fourier terms...\n"; sys.exit(EXITMESS)
+    else: print(" ERROR: Problems reading 2D Fourier terms...\n"); sys.exit(EXITMESS)
 
     indices1, n1 = deal1Dfourierstring(string1)
     indices2, n2 = deal1Dfourierstring(string2)
@@ -4792,7 +4789,7 @@ def readfile_inp(inputname):
     lines = hf.readfile(inputname,hashtag=True,strip=True,skipblank=True)
     for line in lines:
         if "{" in line and "}" in line:
-          print "The input file has to be modified. Error reading line:\n%s"%line
+          print("The input file has to be modified. Error reading line:\n%s"%line)
           sys.exit(EXITMESS)
 
     for line in hf.select_lines(lines,"start_torsions" ,"end_torsions" ,True):
@@ -4838,7 +4835,7 @@ def readfile_inp(inputname):
     for line in hf.select_lines(lines,"start_temperatures","end_temperatures",True):
         if "range" in line:
            Ti, Tf, dT = [float(value) for value in line.split()[1:]]
-           nsteps = int(round((Tf-Ti)/dT))+1
+           nsteps = int(round(old_div((Tf-Ti),dT)))+1
            temperatures += [Ti + j*dT for j in range(nsteps)]
         else:
            temperatures += [float(T) for T in line.split()]
@@ -4849,10 +4846,10 @@ def readfile_inp(inputname):
     #---------------------------------#
     # Check that basic data was given #
     #---------------------------------#
-    if torsion1 is None: print "keyword 'torsion1' has no value!\n"; sys.exit(EXITMESS)
-    if torsion2 is None: print "keyword 'torsion2' has no value!\n"; sys.exit(EXITMESS)
-    if tsigma1  is None: print "keyword 'tsigma1'  has no value!\n"; sys.exit(EXITMESS)
-    if tsigma2  is None: print "keyword 'tsigma2'  has no value!\n"; sys.exit(EXITMESS)
+    if torsion1 is None: print("keyword 'torsion1' has no value!\n"); sys.exit(EXITMESS)
+    if torsion2 is None: print("keyword 'torsion2' has no value!\n"); sys.exit(EXITMESS)
+    if tsigma1  is None: print("keyword 'tsigma1'  has no value!\n"); sys.exit(EXITMESS)
+    if tsigma2  is None: print("keyword 'tsigma2'  has no value!\n"); sys.exit(EXITMESS)
 
     #--------------#
     # Convert data #
@@ -4988,14 +4985,14 @@ def readfiles(filenames,which):
 
     data = {}
 
-    print "     Reading files:"
+    print("     Reading files:")
     for ff, string in zip(filenames,which):
 
         # Does file exists?
         if not os.path.isfile(ff):
-           print"         * %s  | ERROR: unable to find it\n"%ff; sys.exit(EXITMESS)
+           print("         * %s  | ERROR: unable to find it\n"%ff); sys.exit(EXITMESS)
         else:
-           print "        - file name: %s"%ff
+           print("        - file name: %s"%ff)
 
         #--------------#
         # Reading file #
@@ -5004,25 +5001,25 @@ def readfiles(filenames,which):
         if string == "xyz":
            structure, masslist = xyz2Struct(ff)
            symbols   = structure.get("symbols")
-           print "          Number of atoms      %i"%structure.get("natoms")
-           print "          Vibrational d.o.f    %i"%structure.get("nvib")
+           print("          Number of atoms      %i"%structure.get("natoms"))
+           print("          Vibrational d.o.f    %i"%structure.get("nvib"))
            data[string] = [structure,symbols,masslist]
-           print "          Geometry (Cartesian coordinates in Angstrom):"
+           print("          Geometry (Cartesian coordinates in Angstrom):")
            xvec = structure.get("xcc")
            for idx in range(structure.get("natoms")):
                x,y,z = xvec[3*idx:3*idx+3] * cons.angstrom
                symbol = symbols[idx]
                mass   = structure.get("masslist")[idx] * cons.amu
-               print "            %2s   %+10.5f  %+10.5f  %+10.5f   (%7.3f amu)"%(symbol,x,y,z,mass)
+               print("            %2s   %+10.5f  %+10.5f  %+10.5f   (%7.3f amu)"%(symbol,x,y,z,mass))
 
         if string == "calcs_scangeom":
            ilines, software = readfile_calcs(ff,"start_scangeom","end_scangeom")
            software = software.lower()
-           print "          Software: %s"%software
-           print "          Reference lines for the input file:"
-           print "          -----------------------%"
-           for line in ilines: print "          |"+line[:-1]
-           print "          -----------------------%"
+           print("          Software: %s"%software)
+           print("          Reference lines for the input file:")
+           print("          -----------------------%")
+           for line in ilines: print("          |"+line[:-1])
+           print("          -----------------------%")
            data[string] = [ilines,software]
 
         if string == "calcs_sp":
@@ -5032,40 +5029,40 @@ def readfiles(filenames,which):
            software0 = software0.lower()
            software1 = software1.lower()
            software2 = software2.lower()
-           print "          Reference '%s' input for sp0:"%software0
-           print "          -----------------------%"
-           for line in ilines0: print "          |"+line[:-1]
-           print "          -----------------------%"
-           print "          Reference '%s' input for sp1:"%software1
-           print "          -----------------------%"
-           for line in ilines1: print "          |"+line[:-1]
-           print "          -----------------------%"
-           print "          Reference '%s' input for sp2:"%software2
-           print "          -----------------------%"
-           for line in ilines2: print "          |"+line[:-1]
-           print "          -----------------------%"
+           print("          Reference '%s' input for sp0:"%software0)
+           print("          -----------------------%")
+           for line in ilines0: print("          |"+line[:-1])
+           print("          -----------------------%")
+           print("          Reference '%s' input for sp1:"%software1)
+           print("          -----------------------%")
+           for line in ilines1: print("          |"+line[:-1])
+           print("          -----------------------%")
+           print("          Reference '%s' input for sp2:"%software2)
+           print("          -----------------------%")
+           for line in ilines2: print("          |"+line[:-1])
+           print("          -----------------------%")
            data[string] = [ilines0,software0,ilines1,software1,ilines2,software2]
 
         if string == "pes":
            dict_pes, symbols, Eref = readfile_pes(ff)
-           print "          number of points    %i"%len(dict_pes.keys())
-           print "          reference energy    %.6f hartree"%Eref
+           print("          number of points    %i"%len(list(dict_pes.keys())))
+           print("          reference energy    %.6f hartree"%Eref)
            data[string] = [dict_pes, symbols, Eref]
 
         if string == "vfit":
            fterms, parameters, Eref_vfit = readfile_xfit(ff)
-           print "          number of terms in the Fourier series  %i"%len(fterms)
+           print("          number of terms in the Fourier series  %i"%len(fterms))
            data[string] = [fterms, parameters, Eref_vfit]
 
         if string == "splist":
            dict_CPs, Eref_cp = readfile_splist(ff)
-           list_CPs = dict_CPs.keys()
+           list_CPs = list(dict_CPs.keys())
            list0    = [(dict_CPs[cpname][3],cpname) for cpname in list_CPs if dict_CPs[cpname][2] == 0]
            list1    = [(dict_CPs[cpname][3],cpname) for cpname in list_CPs if dict_CPs[cpname][2] == 1]
            list2    = [(dict_CPs[cpname][3],cpname) for cpname in list_CPs if dict_CPs[cpname][2] == 2]
-           print "          number of minima : %2i"%len(list0)
-           print "          number of saddles: %2i"%len(list1)
-           print "          number of maxima : %2i"%len(list2)
+           print("          number of minima : %2i"%len(list0))
+           print("          number of saddles: %2i"%len(list1))
+           print("          number of maxima : %2i"%len(list2))
            data[string] = [dict_CPs,Eref_cp]
 
         if string == "ics":
@@ -5080,16 +5077,16 @@ def readfiles(filenames,which):
                    if tt=="3": ic = "=".join("%i"%(a+1) for a in ic)
                    else      : ic = "-".join("%i"%(a+1) for a in ic)
                    line = line + "  %11s  "%ic
-               print "     %s"%line
+               print("     %s"%line)
 
         if string == "evals":
            dataevals = readfile_evals(ff)
            evalues   = [ Ecm * cons.c2h for Ecm  in dataevals[0]]
            zpe_2DNS  = min(evalues)
-           print "          zpe = %5.3f %s"%(zpe_2DNS*HU1,SU1)
+           print("          zpe = %5.3f %s"%(zpe_2DNS*HU1,SU1))
            data[string] = [evalues,zpe_2DNS]
 
-        print
+        print()
 
     return data
 #----------------------------------------------------------#
@@ -5393,7 +5390,7 @@ def writefile_inp(name):
     tsigma1  = "{1}"
     tsigma2  = "{1}"
     level    = "{"+level   +"}"
-    Tlist    = range(100,2001,100)
+    Tlist    = list(range(100,2001,100))
     #----------------------#
     string = string_inp(torsion1     , torsion2       , tsigma1     , tsigma2,  \
                         level        , charge         , multiplicity, ttype  ,  \
@@ -5495,7 +5492,7 @@ def writefile_xfit(fterms,popt,ofile,mode="w"):
         elif term_type == "cossin": output.write("cossin     %02i    %02i   %+12.5f\n"%(idx1,idx2,parameter))
         elif term_type == "sinsin": output.write("sinsin     %02i    %02i   %+12.5f\n"%(idx1,idx2,parameter))
         elif term_type == "sincos": output.write("sincos     %02i    %02i   %+12.5f\n"%(idx1,idx2,parameter))
-        else: print "Unknown term!"; sys.exit(EXITMESS)
+        else: print("Unknown term!"); sys.exit(EXITMESS)
     output.close()
 #----------------------------------------------------------#
 def writefile_spinfo(f_spinfo,dict_CPs,icoords,Tlist,freqscal=1.0,masslist=None):
@@ -5518,15 +5515,15 @@ def writefile_spinfo(f_spinfo,dict_CPs,icoords,Tlist,freqscal=1.0,masslist=None)
         if struct.get("Etot") < EMIN: EMIN = struct.get("Etot") 
 
     # Now, calculate some things at CPs
-    print "     -------------------------------------------------- "
-    print "     INFORMATION ASSOCIATED WITH EACH STATIONARY POINT: "
-    print "     -------------------------------------------------- "
-    print
-    print "     Qrot: rotational partition function"
-    print "     Qvib: harmonic-oscillator partition function from ZPE"
-    print "     Erel: relative potential energy with respect to the global minimum"
-    print "     Qrv = Qrot * Qvib * exp[-(Erel+ZPE)/(kT)]"
-    print
+    print("     -------------------------------------------------- ")
+    print("     INFORMATION ASSOCIATED WITH EACH STATIONARY POINT: ")
+    print("     -------------------------------------------------- ")
+    print()
+    print("     Qrot: rotational partition function")
+    print("     Qvib: harmonic-oscillator partition function from ZPE")
+    print("     Erel: relative potential energy with respect to the global minimum")
+    print("     Qrv = Qrot * Qvib * exp[-(Erel+ZPE)/(kT)]")
+    print()
     num0, num1, num2 = 1, 1, 1
     for cpname in list_CPs:
         cptype   = dict_CPs[cpname][2]
@@ -5542,9 +5539,9 @@ def writefile_spinfo(f_spinfo,dict_CPs,icoords,Tlist,freqscal=1.0,masslist=None)
         rI2 = rI2 * cons.amu * cons.angstrom**2
         l12 = l12 * cons.amu * cons.angstrom**2
         # To (amu*angstrom^2)^-1
-        d11 = d11 / cons.amu / cons.angstrom**2
-        d22 = d22 / cons.amu / cons.angstrom**2
-        d12 = d12 / cons.amu / cons.angstrom**2
+        d11 = old_div(d11, cons.amu / cons.angstrom**2)
+        d22 = old_div(d22, cons.amu / cons.angstrom**2)
+        d12 = old_div(d12, cons.amu / cons.angstrom**2)
         # Generate string
         if cptype == 0: spinfo = " ==> MIN%02i --> '%s'\n\n"%(num0,cpname); num0 += 1
         if cptype == 1: spinfo = " ==> TS_%02i --> '%s'\n\n"%(num1,cpname); num1 += 1
@@ -5573,8 +5570,8 @@ def writefile_spinfo(f_spinfo,dict_CPs,icoords,Tlist,freqscal=1.0,masslist=None)
         spinfo = spinfo + "              T (K)  |    Qrot    |    Qvib    | (PES+ZPE)/(kT) |    Qrv     \n"
         spinfo = spinfo + "            -----------------------------------------------------------------\n"
         for idx in range(len(Tlist)):
-            Qrv = qrot[idx]*qvib[idx]*np.exp(-(Vadi - EMIN)/cons.kB/Tlist[idx])
-            linedata = (Tlist[idx], qrot[idx], qvib[idx],(Vadi - EMIN)/cons.kB/Tlist[idx],Qrv)
+            Qrv = qrot[idx]*qvib[idx]*np.exp(old_div(-(Vadi - EMIN),cons.kB/Tlist[idx]))
+            linedata = (Tlist[idx], qrot[idx], qvib[idx],old_div((Vadi - EMIN),cons.kB/Tlist[idx]),Qrv)
             spinfo = spinfo + "             %7.2f | %10.3E | %10.3E |    %8.2E    | %10.3E \n"%linedata
         spinfo = spinfo + "            -----------------------------------------------------------------\n"
         spinfo = spinfo + ""
@@ -5604,13 +5601,13 @@ def writefile_spinfo(f_spinfo,dict_CPs,icoords,Tlist,freqscal=1.0,masslist=None)
         spinfo = spinfo + "     * non-torsional ZPE = %.3f cm^-1 = %.3f %s\n"%linetuple
         spinfo = spinfo + "\n\n"
         # Print data
-        for line in spinfo.split("\n")[:-1]: print "         "+line
+        for line in spinfo.split("\n")[:-1]: print("         "+line)
         # Write data
         output.write(spinfo)
 
     output.close()
-    print "     The information about each stationary point is stored at: %s"%f_spinfo
-    print 
+    print("     The information about each stationary point is stored at: %s"%f_spinfo)
+    print() 
 #----------------------------------------------------------#
 #----------------------------------------------------------#
 
@@ -5623,7 +5620,7 @@ def q2dtor_interpes(name,inpdata,files2read):
 
 
     # Read files
-    print "Read files"
+    print("Read files")
     which      = [ "pes",  "vfit", "splist"]
     (symmetry,tsigma1,tsigma2) = inpdata
     dataifiles = readfiles(files2read,which)
@@ -5631,7 +5628,7 @@ def q2dtor_interpes(name,inpdata,files2read):
     # PES and Fourier series at low level
     [dict_pes, symbols, Eref_pes] = dataifiles["pes"]
     [fterms, parameters, Eref_vfit] = dataifiles["vfit"]
-    pnames = dict_pes.keys()
+    pnames = list(dict_pes.keys())
     if Eref_vfit is None: Eref_vfit = Eref_pes
 
     Fourier_PES = Fourier2D(fterms, parameters)
@@ -5647,7 +5644,7 @@ def q2dtor_interpes(name,inpdata,files2read):
 
     # Min Energy at low level
     minE_low = Eref_pes
-    for sp in dict_CPs.keys():
+    for sp in list(dict_CPs.keys()):
         phi1, phi2, sptype, E = dict_CPs[sp][0:4]
         Vcm = Fourier_PES(phi1,phi2)*cons.c2h + Eref_vfit
         if Vcm < minE_low: minE_low = Vcm
@@ -5660,7 +5657,7 @@ def q2dtor_interpes(name,inpdata,files2read):
 
     # Recalculate each point in PES
     new_dict_pes = {}
-    for ppoint in dict_pes.keys():
+    for ppoint in list(dict_pes.keys()):
         phi1, phi2, E_0, xcc = dict_pes[ppoint]
         p0 = np.array([phi1,phi2])
 
@@ -5685,9 +5682,9 @@ def q2dtor_interpes(name,inpdata,files2read):
         area_C = hf.shoelace_triangle(pA,pB,p0)
         tot_area = area_A + area_B + area_C
 
-        lambda_A = area_A / tot_area
-        lambda_B = area_B / tot_area
-        lambda_C = area_C / tot_area
+        lambda_A = old_div(area_A, tot_area)
+        lambda_B = old_div(area_B, tot_area)
+        lambda_C = old_div(area_C, tot_area)
 
         #----------------------------------#
         # Calculate factor using low-level #
@@ -5699,7 +5696,7 @@ def q2dtor_interpes(name,inpdata,files2read):
         E_i = E_A*lambda_A + E_B*lambda_B + E_C*lambda_C
 
         # interpolated value can be zero
-        if E_i != 0.0: factor = E_0 / E_i
+        if E_i != 0.0: factor = old_div(E_0, E_i)
         else         : factor = 1.0
 
         #-----------------------------#
